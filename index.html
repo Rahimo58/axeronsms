@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axeron SMS | Ultimate V5</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --bg: #05070a;
+            --card: #0f1218;
+            --text: #ffffff;
+            --dim: #888;
+            --admin: #ff3e3e;
+            --green: #00ff88;
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.3s; }
+        body { background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+
+        /* --- XƏBƏRDARLIQ SİSTEMİ (TOAST) --- */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; width: 90%; max-width: 350px; }
+        .toast { background: rgba(15, 18, 24, 0.95); color: white; padding: 15px 20px; border-radius: 12px; border-left: 5px solid var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 10px; display: flex; align-items: center; gap: 12px; font-size: 14px; backdrop-filter: blur(10px); animation: slideDown 0.4s ease forwards; }
+        .toast.error { border-left-color: var(--admin); }
+        .toast i { font-size: 18px; color: var(--primary); }
+        .toast.error i { color: var(--admin); }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+
+        /* --- AUTH LAYERS --- */
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { background: var(--card); padding: 30px; border-radius: 25px; width: 100%; max-width: 400px; border: 1px solid rgba(0,210,255,0.2); }
+        .auth-box h2 { text-align: center; color: var(--primary); margin-bottom: 10px; }
+        .auth-box p { text-align: center; color: var(--dim); font-size: 13px; margin-bottom: 25px; }
+
+        input { width: 100%; background: #000; border: 1px solid #222; color: white; padding: 14px; border-radius: 12px; margin-bottom: 15px; outline: none; }
+        input:focus { border-color: var(--primary); }
+
+        .btn-main { width: 100%; background: var(--primary); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 900; cursor: pointer; }
+        .btn-link { background: none; border: none; color: var(--dim); font-size: 12px; width: 100%; margin-top: 15px; text-decoration: underline; }
+
+        /* --- DASHBOARD --- */
+        header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .page { display: none; padding: 20px; padding-bottom: 100px; }
+        .page.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .balance-card { background: linear-gradient(135deg, #00d2ff, #3a7bd5); padding: 25px; border-radius: 20px; margin-bottom: 20px; text-align: center; }
+        .balance-card h1 { margin: 10px 0; font-size: 35px; }
+
+        .srv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .srv-item { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .srv-item i { font-size: 30px; color: var(--primary); margin-bottom: 10px; }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; padding: 10px 0; border-top: 1px solid #222; }
+        .nav-item { flex: 1; text-align: center; color: var(--dim); font-size: 11px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div id="auth-layer" class="auth-overlay">
+        <div id="login-form" class="auth-box">
+            <h2>Xoş Gəldiniz</h2>
+            <p>Hesabınıza daxil olun</p>
+            <input type="text" id="log-user" placeholder="Kullanıcı adı">
+            <input type="password" id="log-pass" placeholder="Şifrə">
+            <button class="btn-main" onclick="handleLogin()">DAXİL OL</button>
+            <button class="btn-link" onclick="toggleAuth('reg')">Hesabınız yoxdur? Qeydiyyat</button>
+            <button class="btn-link" onclick="toggleAuth('forgot')" style="color:#444">Şifrəni unutdum</button>
+        </div>
+
+        <div id="reg-form" class="auth-box" style="display: none;">
+            <h2>Qeydiyyat</h2>
+            <p>Yeni hesab yaradın</p>
+            <input type="text" id="reg-user" placeholder="Kullanıcı adı">
+            <input type="email" id="reg-email" placeholder="E-poçt ünvanı">
+            <input type="password" id="reg-pass" placeholder="Şifrə">
+            <button class="btn-main" onclick="handleRegister()">QEYDİYYATDAN KEÇ</button>
+            <button class="btn-link" onclick="toggleAuth('login')">Geri qayıt</button>
+        </div>
+
+        <div id="forgot-form" class="auth-box" style="display: none;">
+            <h2>Şifrə Bərpası</h2>
+            <p>E-poçtunuzu daxil edin</p>
+            <input type="email" id="forgot-email" placeholder="E-poçt ünvanınız">
+            <button class="btn-main" onclick="handleForgot()">BƏRPA LİNKİ GÖNDƏR</button>
+            <button class="btn-link" onclick="toggleAuth('login')">Geri qayıt</button>
+        </div>
+    </div>
+
+    <div id="main-app" style="display: none;">
+        <header>
+            <div>
+                <b id="app-username" style="color: var(--primary)">User</b>
+                <div style="font-size: 10px; color: var(--dim)">ID: <span id="app-id">#0000</span></div>
+            </div>
+            <div style="text-align: right">
+                <div id="app-bal" style="font-weight: 900; color: var(--primary); font-size: 18px;">0.00 ₼</div>
+            </div>
+        </header>
+
+        <div id="p-market" class="page active">
+            <div class="balance-card">
+                <small>Mövcud Balansınız</small>
+                <h1 id="main-bal">0.00 ₼</h1>
+                <div style="font-size: 11px; opacity: 0.8;">ID-nizi adminə ataraq balans artırın</div>
+            </div>
+
+            <div class="srv-grid">
+                <div class="srv-item" onclick="order('WhatsApp', 0.60)">
+                    <i class="fab fa-whatsapp"></i>
+                    <div>WhatsApp</div>
+                    <div style="color: var(--primary); font-weight: bold; margin-top: 5px;">0.60 ₼</div>
+                </div>
+                <div class="srv-item" onclick="order('Telegram', 0.85)">
+                    <i class="fab fa-telegram"></i>
+                    <div>Telegram</div>
+                    <div style="color: var(--primary); font-weight: bold; margin-top: 5px;">0.85 ₼</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p-admin" class="page">
+            <div style="border: 2px solid var(--admin); padding: 20px; border-radius: 20px; background: #000;">
+                <h2 style="color: var(--admin); text-align: center;">ADMİN PANEL</h2>
+                <input type="text" id="adm-id" placeholder="Müştəri ID (#AX-0000)">
+                <input type="number" id="adm-amt" placeholder="Məbləğ">
+                <button class="btn-main" style="background: var(--admin); color: white;" onclick="admAdd()">BALANS VER</button>
+            </div>
+        </div>
+
+        <nav>
+            <div class="nav-item active" onclick="navigate('market', this)"><i class="fas fa-home"></i>Market</div>
+            <div class="nav-item" onclick="checkAdmin()"><i class="fas fa-user-shield"></i>Admin</div>
+            <div class="nav-item" onclick="location.reload()"><i class="fas fa-power-off"></i>Çıxış</div>
+        </nav>
+    </div>
+
+    <script>
+        let currentUser = null;
+        const db = { users: [] };
+
+        // REAL BİLDİRİŞ SİSTEMİ
+        function showNotify(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i><span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.5s ease forwards';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        function toggleAuth(type) {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('reg-form').style.display = 'none';
+            document.getElementById('forgot-form').style.display = 'none';
+            if(type === 'login') document.getElementById('login-form').style.display = 'block';
+            if(type === 'reg') document.getElementById('reg-form').style.display = 'block';
+            if(type === 'forgot') document.getElementById('forgot-form').style.display = 'block';
+        }
+
+        function handleRegister() {
+            let u = document.getElementById('reg-user').value;
+            let e = document.getElementById('reg-email').value;
+            let p = document.getElementById('reg-pass').value;
+            if(!u || !e || !p) return showNotify("Bütün xanaları doldurun!", "error");
+            
+            db.users.push({ username: u, email: e, password: p, id: "#AX-" + Math.floor(1000 + Math.random() * 9000), balance: 0.00 });
+            showNotify("Qeydiyyat uğurludur!");
+            toggleAuth('login');
+        }
+
+        function handleLogin() {
+            let u = document.getElementById('log-user').value;
+            let p = document.getElementById('log-pass').value;
+            let user = db.users.find(x => x.username === u && x.password === p);
+
+            if(user) {
+                currentUser = user;
+                document.getElementById('auth-layer').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                updateUI();
+                showNotify("Xoş gəldiniz, " + user.username + "!");
+            } else {
+                showNotify("Məlumatlar səhvdir!", "error");
+            }
+        }
+
+        function handleForgot() {
+            let e = document.getElementById('forgot-email').value;
+            if(!e) return showNotify("E-poçtunuzu yazın!", "error");
+            showNotify("Bərpa linki " + e + " ünvanına göndərildi!");
+            toggleAuth('login');
+        }
+
+        function updateUI() {
+            document.getElementById('app-username').innerText = currentUser.username;
+            document.getElementById('app-id').innerText = currentUser.id;
+            document.getElementById('app-bal').innerText = currentUser.balance.toFixed(2) + " ₼";
+            document.getElementById('main-bal').innerText = currentUser.balance.toFixed(2) + " ₼";
+        }
+
+        function navigate(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+        }
+
+        function checkAdmin() {
+            let p = prompt("Admin Şifrəsi:");
+            if(p === "7788") navigate('admin');
+            else if(p !== null) showNotify("Şifrə səhvdir!", "error");
+        }
+
+        function admAdd() {
+            let id = document.getElementById('adm-id').value;
+            let amt = parseFloat(document.getElementById('adm-amt').value);
+            if(id === currentUser.id) {
+                currentUser.balance += amt;
+                updateUI();
+                showNotify("Balans artırıldı: " + amt + " ₼");
+                navigate('market');
+            } else {
+                showNotify("İstifadəçi ID tapılmadı!", "error");
+            }
+        }
+
+        function order(srv, price) {
+            if(currentUser.balance < price) return showNotify("Balans yetərsizdir!", "error");
+            currentUser.balance -= price;
+            updateUI();
+            showNotify(srv + " üçün nömrə alındı!");
+        }
+    </script>
+</body>
+</html>
