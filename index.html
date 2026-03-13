@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axeron SMS PRO | Final Fix</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --p: #00f2ff; --bg: #020408; --card: #0a0e14; --border: #16212e; --text: #ffffff;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+
+        /* DONMAYAN ELAN (FIXED) */
+        #admin-announcement {
+            background: #ff0000; color: white; height: 35px; line-height: 35px;
+            font-weight: bold; overflow: hidden; position: sticky; top: 0; z-index: 2000; display: none;
+        }
+        .scroll-container {
+            width: 100%; overflow: hidden; white-space: nowrap; display: inline-block;
+        }
+        .scroll-text {
+            display: inline-block; padding-left: 100%; animation: scrollText 15s linear infinite;
+        }
+        @keyframes scrollText {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* UI ELEMENTS */
+        .app-container { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--bg); border: 1px solid var(--border); }
+        .hidden { display: none !important; }
+        .auth-screen { padding: 40px; text-align: center; margin-top: 50px; }
+        .auth-logo { font-family: 'Orbitron'; font-size: 45px; color: var(--p); text-shadow: 0 0 15px var(--p); margin-bottom: 30px; }
+        
+        input {
+            width: 100%; padding: 15px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; color: #fff; margin-bottom: 15px; font-size: 16px;
+        }
+        .main-btn {
+            width: 100%; padding: 16px; background: var(--p); border: none; border-radius: 12px;
+            color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; transition: 0.3s;
+        }
+        .main-btn:active { transform: scale(0.95); }
+
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 2px solid var(--p); }
+        .srv-item {
+            background: var(--card); border: 1px solid var(--border); padding: 15px;
+            border-radius: 12px; margin: 10px 15px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .bottom-bar {
+            position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #05070a;
+            display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--p);
+        }
+        .nav-btn { text-align: center; color: #555; font-size: 11px; cursor: pointer; }
+        .nav-btn.active { color: var(--p); }
+    </style>
+</head>
+<body>
+
+<div id="admin-announcement">
+    <div class="scroll-container">
+        <div class="scroll-text" id="ann-txt">Xoş gəlmisiniz! Sistem aktivdir.</div>
+    </div>
+</div>
+
+<div class="app-container">
+    <div id="auth-layer" class="auth-screen">
+        <div class="auth-logo">AXERON</div>
+        <div id="login-box">
+            <input type="text" id="l-user" placeholder="İstifadəçi adı">
+            <input type="password" id="l-pass" placeholder="Şifrə">
+            <button class="main-btn" onclick="handleLogin()">GİRİŞ</button>
+            <p onclick="toggleAuth(false)" style="color:var(--p); margin-top:20px; cursor:pointer;">Hesab yarat</p>
+        </div>
+        <div id="reg-box" class="hidden">
+            <input type="text" id="r-user" placeholder="İstifadəçi adı">
+            <input type="email" id="r-mail" placeholder="E-poçt (məs: mail@gmail.com)">
+            <input type="password" id="r-pass" placeholder="Şifrə">
+            <button class="main-btn" onclick="handleRegister()">QEYDİYYATI TAMAMLA</button>
+            <p onclick="toggleAuth(true)" style="color:var(--p); margin-top:20px; cursor:pointer;">Geri</p>
+        </div>
+    </div>
+
+    <div id="main-layer" class="hidden">
+        <header>
+            <i class="fas fa-bars" style="color:var(--p);"></i>
+            <span style="font-family:'Orbitron'; font-weight:bold;">AXERON</span>
+            <i class="fas fa-wallet"></i>
+        </header>
+
+        <div style="padding: 20px;">
+            <div style="background: linear-gradient(45deg, #0d1117, #002b2e); padding: 30px; border-radius: 20px; border: 1px solid var(--p); text-align: center;">
+                <div style="font-size:12px; opacity:0.7;">BALANS</div>
+                <div style="font-size:35px; font-family:'Orbitron'; color:var(--p);" id="u-bal">0.00 AZN</div>
+                <div id="u-id" style="font-size:12px; margin-top:10px; opacity:0.5;">ID: #0000</div>
+            </div>
+        </div>
+
+        <div id="api-services">
+            </div>
+
+        <nav class="bottom-bar">
+            <div class="nav-btn active"><i class="fas fa-home"></i><br>ANA SƏHİFƏ</div>
+            <div class="nav-btn" onclick="openAdmin()"><i class="fas fa-user-shield"></i><br>ADMİN</div>
+            <div class="nav-btn" onclick="logout()" style="color:red;"><i class="fas fa-power-off"></i><br>ÇIXIŞ</div>
+        </nav>
+    </div>
+</div>
+
+<script>
+    // SƏNİN APİ KEY-İN
+    const API_KEY = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4MDIxMDQxNTAsImlhdCI6MTc3MDU2ODE1MCwicmF5IjoiODE1ZTQyOWRiNmI1NDIxNWNlYTczNTUyZWZmZjZhYWEiLCJzdWIiOjM1NDk5Mjh9.PDkzNwJMg8i6Uoqcmqkb1jKa_dwTQ-NZqpTnIxdBT6yJZ8q-UQMhmyO_TCZf0PhTjRpO7PB4UEcCxWtHlfa0XL-NT97hIj0OBjOOQZnXdkfXZGzMRhlAllld5g2s--Wtt9E_wmP8ZOwEjMIr6jkGt6EJviLWmmWFq9r6JE4naTKDsbJaiA0TLBoFs_tAQqy_z02dJ0OJ2mNzw0oaNBWstMEkzQNEM90KhAZcjyxjDvq6ye0vEj6sM-suuEQI-oQ2WxVVEbmuFv9HX4tAMS-v9FmFLSKUs_TTvYWriISI-1fiDUNBA3_TP6IE7BVqWDDcFNQk9nlBKWTI7rCXH5PWFw";
+
+    // 1. QEYDİYYAT SİSTEMİ (DATABASE)
+    function handleRegister() {
+        const u = document.getElementById('r-user').value;
+        const e = document.getElementById('r-mail').value;
+        const p = document.getElementById('r-pass').value;
+
+        if(!u || !p || !e) return alert("Boş xana buraxma!");
+        if(!e.includes('@') || !e.includes('.')) return alert("E-poçt düzgün deyil!");
+
+        let users = JSON.parse(localStorage.getItem('ax_db')) || [];
+        if(users.find(x => x.username === u)) return alert("Bu istifadəçi artıq var!");
+
+        users.push({ username: u, email: e, password: p, balance: 0.00, id: Math.floor(1000 + Math.random() * 9000) });
+        localStorage.setItem('ax_db', JSON.stringify(users));
+        alert("Qeydiyyat tamamlandı! İndi giriş edin.");
+        toggleAuth(true);
+    }
+
+    // 2. GİRİŞ SİSTEMİ (SESSION)
+    function handleLogin() {
+        const u = document.getElementById('l-user').value;
+        const p = document.getElementById('l-pass').value;
+
+        let users = JSON.parse(localStorage.getItem('ax_db')) || [];
+        let found = users.find(x => x.username === u && x.password === p);
+
+        if(found) {
+            localStorage.setItem('ax_session', JSON.stringify(found));
+            checkSession();
+        } else {
+            alert("İstifadəçi adı və ya şifrə səhvdir!");
+        }
+    }
+
+    // 3. SESİYA YOXLAMA (SAYT AÇILANDA)
+    function checkSession() {
+        const session = localStorage.getItem('ax_session');
+        if(session) {
+            const user = JSON.parse(session);
+            document.getElementById('auth-layer').classList.add('hidden');
+            document.getElementById('main-layer').classList.remove('hidden');
+            document.getElementById('u-bal').innerText = user.balance.toFixed(2) + " AZN";
+            document.getElementById('u-id').innerText = "ID: #" + user.id;
+            loadServices();
+        }
+    }
+
+    // 4. APİ-DƏN QİYMƏTLƏRİ ÇƏKMƏK
+    function loadServices() {
+        // Bu hissə API-dən məlumat çəkəcək. Hələlik sənin API-ni simulyasiya edirəm:
+        const services = [
+            { name: "Telegram (Rusiya)", price: 0.25 },
+            { name: "WhatsApp (Türkiyə)", price: 0.40 },
+            { name: "Instagram", price: 0.15 }
+        ];
+        
+        let html = "";
+        services.forEach(s => {
+            html += `<div class="srv-item">
+                        <b>${s.name}</b>
+                        <b style="color:var(--p);">${s.price} AZN</b>
+                    </div>`;
+        });
+        document.getElementById('api-services').innerHTML = html;
+    }
+
+    // 5. ADMİN PANEL (ELAN DÜZƏLİŞİ)
+    function openAdmin() {
+        let pass = prompt("Admin Şifrəsi:");
+        if(pass === "Rahim058") {
+            let msg = prompt("Yeni qırmızı elan yazısı:");
+            if(msg) {
+                document.getElementById('admin-announcement').style.display = 'block';
+                document.getElementById('ann-txt').innerText = msg;
+            }
+        }
+    }
+
+    function toggleAuth(isLogin) {
+        document.getElementById('login-box').classList.toggle('hidden', !isLogin);
+        document.getElementById('reg-box').classList.toggle('hidden', isLogin);
+    }
+
+    function logout() {
+        localStorage.removeItem('ax_session');
+        location.reload();
+    }
+
+    // Sayt açılanda avtomatik yoxla
+    window.onload = checkSession;
+</script>
+</body>
+</html>
