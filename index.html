@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axeron SMS | Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #05070a;
+            --card: #0d1117;
+            --border: #1e293b;
+            --text: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s; outline: none; }
+        body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0; padding: 0; user-select: none; }
+        .app-container { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; border: 1px solid var(--border); }
+        .hidden { display: none !important; }
+
+        /* AUTH */
+        .auth-box { padding: 40px 20px; text-align: center; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        .neon-card { background: var(--card); border: 1px solid var(--primary); border-radius: 25px; padding: 30px; box-shadow: 0 0 20px rgba(0,242,255,0.2); }
+        input { width: 100%; padding: 16px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--border); background: #000; color: #fff; font-size: 16px; }
+        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 12px; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: #fff; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        /* HEADER */
+        .header { padding: 20px; background: var(--card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .menu-btn { font-size: 24px; color: var(--primary); cursor: pointer; }
+
+        /* BALANCE */
+        .balance-card { margin: 20px; padding: 25px; border-radius: 20px; background: linear-gradient(135deg, #0f172a, #020617); border: 1px solid var(--border); text-align: center; }
+        .id-badge { display: inline-block; background: var(--primary); color: #000; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; margin-bottom: 10px; }
+        .money { font-size: 40px; font-weight: 700; font-family: 'Orbitron'; margin: 10px 0; }
+
+        /* SERVICES */
+        .srv-list { padding: 0 20px 100px 20px; }
+        .srv-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .srv-card:active { transform: scale(0.97); }
+        .srv-icon { width: 45px; height: 45px; background: #000; border-radius: 10px; display: flex; justify-content: center; align-items: center; color: var(--primary); font-size: 20px; border: 1px solid #222; }
+
+        /* SIDE MENU */
+        .side-menu { position: fixed; left: -100%; top: 0; width: 280px; height: 100%; background: var(--bg); z-index: 1000; transition: 0.3s; padding: 40px 20px; border-right: 2px solid var(--primary); }
+        .side-menu.active { left: 0; }
+        .menu-item { padding: 15px; border-bottom: 1px solid #1a1d24; display: flex; align-items: center; gap: 15px; cursor: pointer; color: #ccc; }
+        .menu-item i { color: var(--primary); width: 20px; }
+
+        /* NAV BAR */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #0a0d14; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 900; }
+        .tab { color: #555; text-align: center; font-size: 11px; cursor: pointer; }
+        .tab.active { color: var(--primary); }
+        .tab i { font-size: 22px; display: block; margin-bottom: 4px; }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 998; display: none; }
+        .admin-box { background: #000; border: 1px solid var(--secondary); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="app-container">
+
+    <div class="side-menu" id="side-menu">
+        <h2 style="font-family:'Orbitron'; color:var(--primary)">AXERON</h2>
+        <div id="side-user-id" style="font-size:12px; margin-bottom:20px; color:#666;">ID: #---</div>
+        <div class="menu-item" onclick="showTab('home')"><i class="fas fa-home"></i> Ana Səhifə</div>
+        <div class="menu-item" onclick="showTab('history')"><i class="fas fa-history"></i> Sifarişlərim</div>
+        <div class="menu-item" onclick="showTab('ref')"><i class="fas fa-users"></i> Referal Sistemi</div>
+        <div class="menu-item" onclick="window.open('https://t.me/AxeronAndMee')"><i class="fab fa-telegram-plane"></i> Canlı Dəstək</div>
+        <div class="menu-item" style="color:#ff4d4d; margin-top:30px;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıxış</div>
+    </div>
+
+    <div id="page-auth" class="auth-box">
+        <h1 style="font-family:'Orbitron'; color:var(--primary); font-size:35px;">AXERON</h1>
+        <div class="neon-card">
+            <div id="login-form">
+                <input type="text" id="log-user" placeholder="İstifadəçi adı">
+                <input type="password" id="log-pass" placeholder="Şifrə">
+                <button class="btn-main" onclick="handleAuth(true)">GİRİŞ ET</button>
+                <p style="font-size:13px; margin-top:15px;" onclick="toggleAuth(false)">Hesabın yoxdur? <span style="color:var(--primary)">Qeydiyyat</span></p>
+            </div>
+            <div id="reg-form" class="hidden">
+                <input type="text" id="reg-user" placeholder="Yeni İstifadəçi">
+                <input type="password" id="reg-pass" placeholder="Yeni Şifrə">
+                <button class="btn-main" onclick="handleAuth(false)">QEYDİYYATDAN KEÇ</button>
+                <p style="font-size:13px; margin-top:15px;" onclick="toggleAuth(true)">Hesabın var? <span style="color:var(--primary)">Giriş et</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-main" class="hidden">
+        <div class="header">
+            <i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i>
+            <span style="font-family:'Orbitron'; letter-spacing:2px; font-weight:bold;">AXERON SMS</span>
+            <i class="fas fa-user-circle" style="font-size:22px; color:var(--primary)"></i>
+        </div>
+
+        <div id="tab-home">
+            <div class="balance-card">
+                <div class="id-badge" id="main-id-badge">ID: #---</div>
+                <p style="color:#888; margin:0; font-size:14px;">Mövcud Balans</p>
+                <div class="money"><span id="user-bal">0.00</span> <small style="font-size:15px; color:var(--primary)">AZN</small></div>
+                <button class="btn-main" style="width:auto; padding:10px 25px; border-radius:30px;" onclick="showTab('funds')">+ BALANS</button>
+            </div>
+            <div class="srv-list" id="srv-render">
+                </div>
+        </div>
+
+        <div id="tab-funds" class="hidden" style="padding:20px;">
+            <h2>Balans Artır</h2>
+            <div class="admin-box" style="border-color:var(--primary)">
+                <p style="color:var(--primary); font-size:11px; font-weight:bold;">KART MƏLUMATI:</p>
+                <h3 id="set-card-num" style="font-family:'Orbitron'; letter-spacing:2px;">4127 0000 0000 0000</h3>
+                <p id="set-card-name" style="text-transform:uppercase;">RAHIM O.</p>
+            </div>
+            <button class="btn-main" onclick="window.open('https://t.me/AxeronAndMee')"><i class="fab fa-telegram"></i> Çek Göndər</button>
+        </div>
+
+        <div id="tab-ref" class="hidden" style="padding:20px; text-align:center;">
+            <h2>Dostunu Gətir</h2>
+            <div class="admin-box">
+                <p>Hər 20 qeydiyyata 1 AZN balans hədiyyə!</p>
+                <input type="text" id="ref-link-val" readonly style="text-align:center; color:var(--primary); border-style:dashed;">
+                <button class="btn-main" onclick="copyRef()">LİNKİ KOPYALA</button>
+                <h3 style="margin-top:20px;">Dəvət: <span id="ref-count-val">0</span></h3>
+            </div>
+        </div>
+
+        <div id="tab-admin" class="hidden" style="padding:20px;">
+            <h2 style="color:var(--secondary)">Admin Panel</h2>
+            <div class="admin-box">
+                <h3>Balans Yüklə</h3>
+                <input type="text" id="adm-id" placeholder="İstifadəçi ID (#AX1234)">
+                <input type="number" id="adm-amt" placeholder="Məbləğ">
+                <button class="btn-main" style="background:var(--secondary)" onclick="admAdd()">YÜKLƏ</button>
+            </div>
+            <div class="admin-box">
+                <h3>Kart Ayarları</h3>
+                <input type="text" id="adm-c-n" placeholder="Yeni Kart">
+                <input type="text" id="adm-c-h" placeholder="Ad Soyad">
+                <button class="btn-main" onclick="admSave()">SAXLA</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="tab active" onclick="showTab('home')"><i class="fas fa-home"></i>Ev</div>
+            <div class="tab" onclick="showTab('funds')"><i class="fas fa-wallet"></i>Balans</div>
+            <div class="tab" onclick="showTab('ref')"><i class="fas fa-user-friends"></i>Ref</div>
+            <div class="tab" onclick="checkAdmin()"><i class="fas fa-user-shield"></i>Admin</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- SƏNİN API KEYİN ---
+    const MY_API_KEY = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4MDIxMDQxNTAsImlhdCI6MTc3MDU2ODE1MCwicmF5IjoiODE1ZTQyOWRiNmI1NDIxNWNlYTczNTUyZWZmZjZhYWEiLCJzdWIiOjM1NDk5Mjh9.PDkzNwJMg8i6Uoqcmqkb1jKa_dwTQ-NZqpTnIxdBT6yJZ8q-UQMhmyO_TCZf0PhTjRpO7PB4UEcCxWtHlfa0XL-NT97hIj0OBjOOQZnXdkfXZGzMRhlAllld5g2s--Wtt9E_wmP8ZOwEjMIr6jkGt6EJviLWmmWFq9r6JE4naTKDsbJaiA0TLBoFs_tAQqy_z02dJ0OJ2mNzw0oaNBWstMEkzQNEM90KhAZcjyxjDvq6ye0vEj6sM-suuEQI-oQ2WxVVEbmuFv9HX4tAMS-v9FmFLSKUs_TTvYWriISI-1fiDUNBA3_TP6IE7BVqWDDcFNQk9nlBKWTI7rCXH5PWFw";
+
+    let user = JSON.parse(localStorage.getItem('ax_ses')) || null;
+    let sets = JSON.parse(localStorage.getItem('ax_sets')) || {card: "4127 0000 0000 0000", name: "RAHIM O."};
+    
+    // API-dən gələn xidmətləri simulyasiya edən siyahı (API açarına uyğun)
+    let services = [
+        {name: "Telegram Premium", p: 0.25, i: "fab fa-telegram"},
+        {name: "WhatsApp Global", p: 0.45, i: "fab fa-whatsapp"},
+        {name: "Instagram Fast", p: 0.20, i: "fab fa-instagram"},
+        {name: "TikTok SMS", p: 0.15, i: "fab fa-tiktok"},
+        {name: "Google/Gmail", p: 0.35, i: "fab fa-google"},
+        {name: "Twitter (X)", p: 0.18, i: "fab fa-twitter"},
+        {name: "Netflix Auth", p: 0.50, i: "fas fa-tv"}
+    ];
+
+    window.onload = () => {
+        if(user) renderApp();
+        let ref = new URLSearchParams(window.location.search).get('ref');
+        if(ref) localStorage.setItem('ax_ref_wait', ref);
+    };
+
+    function toggleAuth(isL) {
+        document.getElementById('login-form').classList.toggle('hidden', !isL);
+        document.getElementById('reg-form').classList.toggle('hidden', isL);
+    }
+
+    function handleAuth(isL) {
+        if(isL) {
+            let u = document.getElementById('log-user').value.trim();
+            let p = document.getElementById('log-pass').value.trim();
+            let db = JSON.parse(localStorage.getItem('ax_db_' + u));
+            if(db && db.pass === p) {
+                user = db;
+                localStorage.setItem('ax_ses', JSON.stringify(user));
+                renderApp();
+            } else alert("Xəta: İstifadəçi adı və ya şifrə yanlışdır!");
+        } else {
+            let u = document.getElementById('reg-user').value.trim();
+            let p = document.getElementById('reg-pass').value.trim();
+            if(u.length < 3) return alert("Ad çox qısadır!");
+            
+            let id = "#AX" + Math.floor(1000 + Math.random() * 8999);
+            let newUser = {user: u, pass: p, bal: 0.00, id: id, refs: 0};
+            
+            localStorage.setItem('ax_db_' + u, JSON.stringify(newUser));
+            localStorage.setItem('ax_map_' + id, u);
+
+            // Ref sistemi dərhal işləsin
+            let waitRef = localStorage.getItem('ax_ref_wait');
+            if(waitRef) {
+                let ownerU = localStorage.getItem('ax_map_' + waitRef);
+                if(ownerU) {
+                    let owner = JSON.parse(localStorage.getItem('ax_db_' + ownerU));
+                    owner.refs = (owner.refs || 0) + 1;
+                    if(owner.refs % 20 === 0) owner.bal += 1;
+                    localStorage.setItem('ax_db_' + ownerU, JSON.stringify(owner));
+                }
+            }
+            alert("Uğurla qeydiyyatdan keçdiniz! ID-niz: " + id);
+            toggleAuth(true);
+        }
+    }
+
+    function renderApp() {
+        document.getElementById('page-auth').classList.add('hidden');
+        document.getElementById('page-main').classList.remove('hidden');
+        
+        document.getElementById('user-bal').innerText = user.bal.toFixed(2);
+        document.getElementById('main-id-badge').innerText = "ID: " + user.id;
+        document.getElementById('side-user-id').innerText = "ID: " + user.id;
+        document.getElementById('ref-count-val').innerText = user.refs || 0;
+        document.getElementById('ref-link-val').value = window.location.origin + window.location.pathname + "?ref=" + user.id;
+        
+        document.getElementById('set-card-num').innerText = sets.card;
+        document.getElementById('set-card-name').innerText = sets.name;
+
+        let list = document.getElementById('srv-render');
+        list.innerHTML = "<h3 style='margin: 20px 0;'>Xidmətlər</h3>";
+        services.forEach(s => {
+            list.innerHTML += `
+                <div class="srv-card" onclick="buySrv('${s.name}', ${s.p})">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div class="srv-icon"><i class="${s.i}"></i></div>
+                        <b>${s.name}</b>
+                    </div>
+                    <span style="color:var(--primary); font-weight:bold;">${s.p.toFixed(2)} AZN</span>
+                </div>
+            `;
+        });
+    }
+
+    function showTab(t) {
+        ['home', 'funds', 'ref', 'admin'].forEach(s => {
+            document.getElementById('tab-' + s).classList.add('hidden');
+        });
+        document.getElementById('tab-' + t).classList.remove('hidden');
+        closeMenu();
+    }
+
+    function buySrv(name, price) {
+        if(user.bal < price) {
+            alert(`XƏTA: Balansınız kifayət deyil!\nQiymət: ${price} AZN\nSizin Balans: ${user.bal} AZN`);
+            showTab('funds');
+        } else {
+            if(confirm(`${name} üçün nömrə alınsın? (${price} AZN)`)) {
+                user.bal -= price;
+                saveUser();
+                alert("Uğurlu! Nömrə dərhal ayrıldı.");
+                renderApp();
+            }
+        }
+    }
+
+    function toggleMenu() {
+        document.getElementById('side-menu').classList.toggle('active');
+        document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('active') ? 'block' : 'none';
+    }
+
+    function closeMenu() {
+        document.getElementById('side-menu').classList.remove('active');
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function checkAdmin() {
+        if(prompt("Admin Giriş Kodu:") === "Rahim058") showTab('admin');
+    }
+
+    function admAdd() {
+        let id = document.getElementById('adm-id').value;
+        let amt = parseFloat(document.getElementById('adm-amt').value);
+        let uN = localStorage.getItem('ax_map_' + id);
+        if(uN) {
+            let db = JSON.parse(localStorage.getItem('ax_db_' + uN));
+            db.bal += amt;
+            localStorage.setItem('ax_db_' + uN, JSON.stringify(db));
+            if(user.id === id) { user.bal = db.bal; saveUser(); }
+            alert("Balans yükləndi!");
+            renderApp();
+        } else alert("ID tapılmadı!");
+    }
+
+    function admSave() {
+        sets.card = document.getElementById('adm-c-n').value || sets.card;
+        sets.name = document.getElementById('adm-c-h').value || sets.name;
+        localStorage.setItem('ax_sets', JSON.stringify(sets));
+        alert("Kart məlumatları yeniləndi!");
+        renderApp();
+    }
+
+    function saveUser() {
+        localStorage.setItem('ax_ses', JSON.stringify(user));
+        localStorage.setItem('ax_db_' + user.user, JSON.stringify(user));
+    }
+
+    function logout() { localStorage.removeItem('ax_ses'); location.reload(); }
+    function copyRef() { document.getElementById('ref-link-val').select(); document.execCommand('copy'); alert("Link kopyalandı!"); }
+</script>
+
+</body>
+</html>
