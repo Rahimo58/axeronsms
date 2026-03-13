@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axeron SMS PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --p: #00f2ff; --bg: #020408; --card: #0d1117; --border: #1f2937; --text: #e5e7eb;
+            --accent: #ff0055;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0; overflow-x: hidden; }
+
+        /* YAVAŞ VƏ AXICI ELAN (DONMUR) */
+        #admin-bar {
+            background: linear-gradient(90deg, #ff0000, #990000);
+            height: 35px; display: none; overflow: hidden; position: sticky; top: 0; z-index: 2001;
+            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .scroll-txt {
+            white-space: nowrap; display: inline-block;
+            animation: moveText 20s linear infinite; /* 20 saniyə - Çox yavaş və axıcı */
+            font-weight: bold; color: white; font-size: 14px;
+        }
+        @keyframes moveText { 
+            0% { transform: translateX(100vw); } 
+            100% { transform: translateX(-100%); } 
+        }
+
+        /* AUTH SCREEN */
+        .auth-container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .logo-main { font-family: 'Orbitron'; font-size: 45px; font-weight: 900; color: var(--p); text-shadow: 0 0 20px var(--p); margin-bottom: 40px; }
+        
+        .glass-box {
+            background: rgba(13, 17, 23, 0.8); border: 1px solid var(--border);
+            padding: 30px; border-radius: 20px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        input {
+            width: 100%; padding: 14px; margin-bottom: 15px; background: #05070a;
+            border: 1px solid var(--border); border-radius: 12px; color: white; transition: 0.3s;
+        }
+        input:focus { border-color: var(--p); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+
+        .btn-glow {
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            background: var(--p); color: black; font-family: 'Orbitron'; font-weight: bold;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--p); }
+
+        /* MAIN APP */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--card); }
+        .bal-card { 
+            background: linear-gradient(135deg, #16212e, #0d1117); padding: 25px; 
+            border-radius: 20px; border: 1px solid var(--p); margin: 20px; text-align: center;
+        }
+        .service-item {
+            background: var(--card); margin: 10px 20px; padding: 15px; 
+            border-radius: 15px; border: 1px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center;
+        }
+
+        .hidden { display: none !important; }
+        .nav-bottom {
+            position: fixed; bottom: 0; width: 100%; max-width: 500px; background: var(--card);
+            display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border);
+        }
+        .nav-item { color: #6b7280; text-align: center; font-size: 12px; cursor: pointer; }
+        .nav-item.active { color: var(--p); }
+    </style>
+</head>
+<body>
+
+<div id="admin-bar"><div class="scroll-txt" id="admin-msg">Diqqət! Bütün ölkələr üzrə xidmətlərimiz yeniləndi.</div></div>
+
+<div id="app" style="max-width: 500px; margin: 0 auto; min-height: 100vh; position: relative;">
+    
+    <div id="auth-layer" class="auth-container">
+        <div class="logo-main">AXERON</div>
+        
+        <div id="login-form" class="glass-box">
+            <input type="text" id="l-user" placeholder="İstifadəçi adı">
+            <input type="password" id="l-pass" placeholder="Şifrə">
+            <button class="btn-glow" onclick="doLogin()">Daxil Ol</button>
+            <p onclick="toggleAuth(false)" style="text-align:center; color:var(--p); margin-top:15px; font-size:14px; cursor:pointer;">Hesabın yoxdur? Qeydiyyat</p>
+        </div>
+
+        <div id="reg-form" class="glass-box hidden">
+            <input type="text" id="r-user" placeholder="İstifadəçi adı">
+            <input type="email" id="r-email" placeholder="E-poçt ünvanı">
+            <input type="password" id="r-pass" placeholder="Şifrə">
+            <button class="btn-glow" onclick="doRegister()">Tamamla</button>
+            <p onclick="toggleAuth(true)" style="text-align:center; color:var(--p); margin-top:15px; font-size:14px; cursor:pointer;">Geri qayıt</p>
+        </div>
+    </div>
+
+    <div id="main-layer" class="hidden">
+        <div class="header">
+            <i class="fas fa-bars" style="color:var(--p); font-size:20px;"></i>
+            <span style="font-family:'Orbitron'; font-weight:bold; letter-spacing:2px;">AXERON</span>
+            <i class="fas fa-user-circle" style="color:var(--p); font-size:20px;"></i>
+        </div>
+
+        <div class="bal-card">
+            <div style="font-size:12px; color:#9ca3af; margin-bottom:5px;">MÖVCUD BALANS</div>
+            <div style="font-size:35px; font-family:'Orbitron'; color:var(--p);"><span id="u-bal">0.00</span> <small style="font-size:15px; color:white;">AZN</small></div>
+            <div id="u-id" style="margin-top:10px; font-size:13px; opacity:0.6;">ID: #0000</div>
+        </div>
+
+        <div id="service-area" style="padding-bottom: 100px;">
+            <h4 style="margin: 20px; color: var(--p);">Aktiv Xidmətlər (API)</h4>
+            <div id="api-list">
+                </div>
+        </div>
+
+        <div class="nav-bottom">
+            <div class="nav-item active"><i class="fas fa-bolt"></i><br>Sifariş</div>
+            <div class="nav-item" onclick="switchTab('funds')"><i class="fas fa-wallet"></i><br>Balans</div>
+            <div class="nav-item" onclick="showAdmin()"><i class="fas fa-cog"></i><br>Admin</div>
+            <div class="nav-item" onclick="doLogout()" style="color:var(--accent);"><i class="fas fa-power-off"></i><br>Çıxış</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_KEY = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9..."; // Sənin API-n
+
+    // 1. YADDA SAXLAMA MƏNTİQİ
+    function doRegister() {
+        const u = document.getElementById('r-user').value;
+        const e = document.getElementById('r-email').value;
+        const p = document.getElementById('r-pass').value;
+
+        if(!u || !p || !e) return alert("Bütün xanaları doldur!");
+        if(!e.includes('@')) return alert("E-poçt ünvanı düzgün deyil!");
+
+        let db = JSON.parse(localStorage.getItem('axeron_db')) || [];
+        if(db.find(x => x.username === u)) return alert("Bu ad artıq alınıb!");
+
+        db.push({ username: u, email: e, password: p, balance: 0.00, id: Math.floor(100000 + Math.random() * 900000) });
+        localStorage.setItem('axeron_db', JSON.stringify(db));
+        
+        alert("Qeydiyyat uğurlu! Giriş edə bilərsiniz.");
+        toggleAuth(true);
+    }
+
+    function doLogin() {
+        const u = document.getElementById('l-user').value;
+        const p = document.getElementById('l-pass').value;
+
+        let db = JSON.parse(localStorage.getItem('axeron_db')) || [];
+        let user = db.find(x => x.username === u && x.password === p);
+
+        if(user) {
+            localStorage.setItem('axeron_session', JSON.stringify(user));
+            startApp();
+        } else {
+            alert("İstifadəçi adı və ya şifrə səhvdir!");
+        }
+    }
+
+    // 2. TƏTBİQİ BAŞLAT
+    function startApp() {
+        const session = localStorage.getItem('axeron_session');
+        if(session) {
+            const user = JSON.parse(session);
+            document.getElementById('auth-layer').classList.add('hidden');
+            document.getElementById('main-layer').classList.remove('hidden');
+            document.getElementById('u-bal').innerText = user.balance.toFixed(2);
+            document.getElementById('u-id').innerText = "ID: #" + user.id;
+            loadApiServices();
+        }
+    }
+
+    // 3. API-DEN REAL QİYMƏTLƏRİ ÇƏKMƏK
+    async function loadApiServices() {
+        // Sənin APİ-nə uyğun real data bura gəlir
+        const mockData = [
+            { name: "Telegram", price: 0.25, icon: "fa-paper-plane" },
+            { name: "WhatsApp", price: 0.45, icon: "fa-whatsapp" },
+            { name: "Instagram", price: 0.18, icon: "fa-instagram" }
+        ];
+
+        let html = "";
+        mockData.forEach(s => {
+            html += `
+                <div class="service-item">
+                    <div><i class="fab ${s.icon}" style="color:var(--p); margin-right:10px;"></i> ${s.name}</div>
+                    <div style="color:var(--p); font-weight:bold;">${s.price} AZN</div>
+                </div>
+            `;
+        });
+        document.getElementById('api-list').innerHTML = html;
+    }
+
+    // ADMIN FUNKSİYALARI
+    function showAdmin() {
+        let p = prompt("Admin Giriş Şifrəsi:");
+        if(p === "Rahim058") {
+            let msg = prompt("Yeni elan yazısı:");
+            if(msg) {
+                document.getElementById('admin-bar').style.display = 'flex';
+                document.getElementById('admin-msg').innerText = msg;
+            }
+        }
+    }
+
+    function toggleAuth(isLogin) {
+        document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+        document.getElementById('reg-form').classList.toggle('hidden', isLogin);
+    }
+
+    function doLogout() {
+        localStorage.removeItem('axeron_session');
+        location.reload();
+    }
+
+    // Səhifə açılanda yoxla görək adam qabaqcadan daxil olubmu?
+    window.onload = startApp;
+</script>
+</body>
+</html>
