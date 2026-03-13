@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axeron SMS | Giga Master V7</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --dark: #05070a;
+            --card: #0d1117;
+            --accent: #ff00c1;
+            --neon: 0 0 15px rgba(0, 242, 255, 0.6);
+            --neon-purp: 0 0 15px rgba(112, 0, 255, 0.6);
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; }
+        body { background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 500px; margin: auto; min-height: 100vh; background: var(--dark); border-left: 1px solid #1a1d24; border-right: 1px solid #1a1d24; position: relative; }
+        .hidden { display: none !important; }
+
+        /* --- NEON GİRİŞ SİSTEMİ --- */
+        #auth-screen { padding: 60px 25px; text-align: center; background: radial-gradient(circle at top, #111827 0%, #05070a 100%); }
+        .auth-logo { font-family: 'Orbitron', sans-serif; font-size: 40px; text-shadow: var(--neon); letter-spacing: 5px; margin-bottom: 30px; }
+        .neon-card { background: var(--card); border: 2px solid var(--primary); border-radius: 30px; padding: 35px; box-shadow: var(--neon); position: relative; }
+        input { width: 100%; padding: 18px; margin: 12px 0; border-radius: 15px; border: 1px solid #1e293b; background: #000; color: #fff; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: var(--neon); transform: translateY(-2px); }
+        .btn-glow { width: 100%; padding: 18px; background: linear-gradient(45deg, var(--primary), var(--secondary)); border: none; border-radius: 15px; color: #fff; font-weight: 800; font-size: 18px; cursor: pointer; text-shadow: 0 0 5px #fff; }
+
+        /* --- DASHBOARD --- */
+        .main-header { padding: 20px; background: var(--card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 500; }
+        .balance-box { margin: 20px; padding: 30px; border-radius: 30px; background: linear-gradient(145deg, #0f172a, #020617); border: 1px solid var(--primary); box-shadow: var(--neon); text-align: center; }
+        .id-label { font-family: 'Orbitron', sans-serif; font-size: 10px; background: var(--primary); color: #000; padding: 5px 12px; border-radius: 8px; font-weight: bold; margin-bottom: 12px; display: inline-block; }
+
+        /* --- XİDMƏTLƏR LİSTİ --- */
+        .service-list { padding: 10px 20px 120px 20px; }
+        .srv-item { background: var(--card); margin-bottom: 15px; padding: 18px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1e293b; cursor: pointer; }
+        .srv-item:hover { border-color: var(--primary); transform: scale(1.03); box-shadow: var(--neon); }
+        .srv-left { display: flex; align-items: center; gap: 15px; }
+        .srv-icon { width: 45px; height: 45px; background: #1a1d24; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: var(--primary); border: 1px solid #334155; }
+        .srv-name { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+        .srv-price { background: rgba(0, 242, 255, 0.1); color: var(--primary); padding: 8px 15px; border-radius: 10px; font-weight: 900; }
+
+        /* --- 3 XƏT MENYU --- */
+        .side-menu { position: fixed; left: -100%; top: 0; width: 320px; height: 100%; background: #080a0f; z-index: 1000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 40px 25px; border-right: 1px solid var(--primary); box-shadow: 20px 0 50px rgba(0,0,0,0.9); }
+        .side-menu.active { left: 0; }
+        .menu-head { border-bottom: 1px solid #1e293b; padding-bottom: 20px; margin-bottom: 20px; }
+        .menu-item { display: flex; align-items: center; padding: 18px; color: #cbd5e1; text-decoration: none; font-size: 18px; border-radius: 15px; margin-bottom: 8px; cursor: pointer; }
+        .menu-item i { width: 30px; font-size: 20px; color: var(--primary); margin-right: 15px; }
+        .menu-item:hover { background: rgba(0, 242, 255, 0.05); color: #fff; }
+        .logout-btn { color: #ff4757 !important; border-top: 1px solid #1e293b; margin-top: 20px; }
+
+        /* --- BOTTOM NAVIGATION --- */
+        .navbar { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #0a0d14; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1e293b; z-index: 900; }
+        .nav-link { color: #64748b; text-align: center; font-size: 12px; text-decoration: none; cursor: pointer; }
+        .nav-link.active { color: var(--primary); text-shadow: var(--neon); }
+        .nav-link i { font-size: 24px; display: block; margin-bottom: 5px; }
+
+        /* --- SECTIONS --- */
+        .content-section { padding: 25px; padding-bottom: 120px; }
+        .info-card { background: var(--card); padding: 25px; border-radius: 20px; border-left: 5px solid var(--primary); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .faq-q { color: var(--primary); font-weight: 700; display: block; margin-bottom: 10px; font-size: 18px; }
+
+        /* --- ADMIN PANEL --- */
+        .admin-card { background: #000; border: 1px solid var(--secondary); border-radius: 25px; padding: 25px; margin-bottom: 25px; box-shadow: var(--neon-purp); }
+        .admin-card h3 { color: var(--secondary); margin-top: 0; font-family: 'Orbitron', sans-serif; font-size: 16px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; display: none; backdrop-filter: blur(5px); }
+        
+        /* Satın Alma Animasyonu */
+        .loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--card); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="toggleSideMenu()"></div>
+<div id="buy-loader" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <h2 id="loader-text">Nömrə Hazırlanır...</h2>
+</div>
+
+<div class="app-container">
+
+    <div class="side-menu" id="side-menu">
+        <div class="menu-head">
+            <h2 style="color:var(--primary); font-family:'Orbitron'">AXERON SMS</h2>
+            <div class="id-label" id="m-user-id">#ID: YÜKLƏNİR</div>
+        </div>
+        <div class="menu-item" onclick="switchSection('home')"><i class="fas fa-shopping-cart"></i> Xidmətlər</div>
+        <div class="menu-item" onclick="switchSection('ref')"><i class="fas fa-user-friends"></i> Referal Qazan</div>
+        <div class="menu-item" onclick="switchSection('history')"><i class="fas fa-history"></i> Sifariş Tarixçəsi</div>
+        <div class="menu-item" onclick="switchSection('about')"><i class="fas fa-info-circle"></i> Haqqımızda</div>
+        <div class="menu-item" onclick="switchSection('faq')"><i class="fas fa-question-circle"></i> Tez-tez Verilən Suallar</div>
+        <div class="menu-item" onclick="window.open('https://t.me/AxeronAndMee')"><i class="fab fa-telegram"></i> Canlı Dəstək</div>
+        <div class="menu-item logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Hesabdan Çıxış</div>
+        <p style="position:absolute; bottom:20px; font-size:12px; color:#444;">V7.0.0 Stable Build</p>
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-logo">AXERON</div>
+        <div class="neon-card">
+            <div id="login-box">
+                <h3>Xoş Gəlmisiniz</h3>
+                <input type="text" id="log-u" placeholder="İstifadəçi adı">
+                <input type="password" id="log-p" placeholder="Şifrə">
+                <button class="btn-glow" onclick="handleAuth(true)">DAXİL OL</button>
+                <p style="margin-top:20px; font-size:14px; cursor:pointer;" onclick="toggleAuthForms(false)">Hələ hesabınız yoxdur? <span style="color:var(--primary)">Qeydiyyat</span></p>
+            </div>
+            <div id="reg-box" class="hidden">
+                <h3>Yeni Hesab</h3>
+                <input type="text" id="reg-u" placeholder="İstifadəçi adı seçin">
+                <input type="password" id="reg-p" placeholder="Şifrə təyin edin">
+                <button class="btn-glow" style="background:linear-gradient(45deg, var(--secondary), var(--accent))" onclick="handleAuth(false)">QEYDİYYATDAN KEÇ</button>
+                <p style="margin-top:20px; font-size:14px; cursor:pointer;" onclick="toggleAuthForms(true)">Hesabınız var? <span style="color:var(--primary)">Giriş edin</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-screen" class="hidden">
+        <div class="main-header">
+            <i class="fas fa-bars" style="font-size:24px; cursor:pointer" onclick="toggleSideMenu()"></i>
+            <span style="font-family:'Orbitron'; font-weight:bold; letter-spacing:2px; color:var(--primary)">AXERON</span>
+            <i class="fas fa-user-circle" style="font-size:24px;"></i>
+        </div>
+
+        <div class="balance-box">
+            <div class="id-label" id="user-id-tag">#AX0000</div>
+            <p style="color:#94a3b8; font-size:16px; margin:0;">Mövcud Balansınız</p>
+            <h1 style="font-size:50px; margin:10px 0; font-family:'Orbitron'"><span id="main-bal">0.00</span> <small style="font-size:18px; color:var(--primary)">AZN</small></h1>
+            <button class="btn-glow" style="width:auto; padding:10px 30px; border-radius:50px;" onclick="switchSection('funds')">+ Balansı Artır</button>
+        </div>
+
+        <div id="home-section" class="service-list">
+            </div>
+
+        <div id="funds-section" class="content-section hidden">
+            <h2 style="color:var(--primary)">Balans Artırılması</h2>
+            <div class="info-card">
+                <p style="color:var(--primary); font-size:12px; font-weight:bold;">ÖDƏNİŞ EDİLMƏLİ KART:</p>
+                <h2 id="disp-card" style="letter-spacing:2px; margin:10px 0;">0000 0000 0000 0000</h2>
+                <h3 id="disp-name" style="text-transform:uppercase; color:#fff;">AD SOYAD</h3>
+            </div>
+            <div class="info-card" style="border-left-color: var(--secondary);">
+                <p>1. Kart nömrəsini kopyalayın və ödənişi edin.<br>
+                   2. Ödəniş çekini Telegram vasitəsilə adminə göndərin.<br>
+                   3. Balansınız 5-10 dəqiqə ərzində təsdiqlənəcək.</p>
+            </div>
+            <button class="btn-glow" onclick="window.open('https://t.me/AxeronAndMee')"><i class="fab fa-telegram"></i> ÇEKI ADMINƏ GÖNDƏR</button>
+        </div>
+
+        <div id="ref-section" class="content-section hidden" style="text-align:center;">
+            <h2 style="color:var(--primary)">Dostlarını Dəvət Et</h2>
+            <div class="info-card" style="border-left:none; border:1px dashed var(--primary);">
+                <i class="fas fa-gift" style="font-size:40px; color:var(--primary); margin-bottom:15px;"></i>
+                <p>Hər 20 nəfər real qeydiyyat üçün balansınıza <b>1.00 AZN</b> əlavə olunacaq!</p>
+                <input type="text" id="ref-url" readonly style="text-align:center; color:var(--primary); background:#000;">
+                <button class="btn-glow" onclick="copyReferral()">LİNKİ KOPYALA</button>
+                <div style="margin-top:20px; font-size:20px;">Dəvət: <span id="ref-count-disp" style="color:var(--primary)">0</span> / 20</div>
+            </div>
+        </div>
+
+        <div id="about-section" class="content-section hidden">
+            <h2 style="color:var(--primary)">Haqqımızda</h2>
+            <div class="info-card">
+                <p><b>Axeron SMS</b> olaraq biz, müştərilərimizə ən sürətli və ucuz SMS təsdiqləmə (Fake nömrə) xidmətlərini təqdim edirik. Sistemimiz tamamilə avtomatlaşdırılmışdır və 200-dən çox ölkənin nömrələrini dəstəkləyir.</p>
+                <p>Bizim missiyamız məxfiliyinizi qorumaq üçün sizə ikinci bir nömrə təmin etməkdir.</p>
+            </div>
+        </div>
+
+        <div id="faq-section" class="content-section hidden">
+            <h2 style="color:var(--primary)">Sual-Cavab</h2>
+            <div class="info-card">
+                <span class="faq-q">Kod gəlməsə nə etməliyəm?</span>
+                <p>Əgər nömrəyə kod gəlməzsə, sifariş 10 dəqiqə ərzində ləğv olunur və balansınız dərhal geri qaytarılır.</p>
+            </div>
+            <div class="info-card">
+                <span class="faq-q">Balansım nə vaxt yüklənəcək?</span>
+                <p>Çeki adminə (@AxeronAndMee) göndərdikdən sonra operatorlarımız tərəfindən ən qısa zamanda təsdiq edilir.</p>
+            </div>
+            <div class="info-card">
+                <span class="faq-q">Bir nömrəni təkrar istifadə edə bilərəm?</span>
+                <p>Xeyr, SMS nömrələri tək istifadəlikdir.</p>
+            </div>
+        </div>
+
+        <div id="history-section" class="content-section hidden">
+            <h2 style="color:var(--primary)">Sifariş Tarixçəsi</h2>
+            <div id="history-list">
+                <p style="color:#444; text-align:center;">Hələ ki sifariş yoxdur.</p>
+            </div>
+        </div>
+
+        <div id="admin-section" class="content-section hidden">
+            <h2 style="color:var(--secondary)">Admin Control Center</h2>
+            
+            <div class="admin-card">
+                <h3>ID İLƏ BALANS ARTIR</h3>
+                <input type="text" id="adm-target-id" placeholder="Məsələn: #AX1234">
+                <input type="number" id="adm-amount" placeholder="Məbləğ (AZN)">
+                <button class="btn-glow" style="background:var(--secondary)" onclick="adminAddBalance()">BALANSI TƏSDİQLƏ</button>
+            </div>
+
+            <div class="admin-card">
+                <h3>SİSTEM AYARLARI (KART/API)</h3>
+                <input type="text" id="adm-card-no" placeholder="Kart Nömrəsi">
+                <input type="text" id="adm-card-name" placeholder="Ad Soyad">
+                <input type="text" id="adm-api-key" placeholder="API KEY (SMS-Service)">
+                <button class="btn-glow" onclick="adminSaveSettings()">AYARLARI YADDA SAXLA</button>
+            </div>
+
+            <div class="admin-card">
+                <h3>YENİ XİDMƏT ƏLAVƏ ET</h3>
+                <input type="text" id="adm-srv-name" placeholder="Xidmət Adı (Məs: WhatsApp)">
+                <input type="number" id="adm-srv-price" placeholder="Qiymət (AZN)">
+                <input type="text" id="adm-srv-icon" placeholder="Icon Class (Məs: fab fa-whatsapp)">
+                <button class="btn-glow" onclick="adminAddService()">XİDMƏTİ AKTİVLƏŞDİR</button>
+            </div>
+        </div>
+
+        <div class="navbar" id="main-nav">
+            <div class="nav-link active" onclick="switchSection('home')">
+                <i class="fas fa-home"></i>Ev
+            </div>
+            <div class="nav-link" onclick="switchSection('funds')">
+                <i class="fas fa-wallet"></i>Balans
+            </div>
+            <div class="nav-link" onclick="switchSection('ref')">
+                <i class="fas fa-gift"></i>Ref
+            </div>
+            <div class="nav-link" onclick="handleAdminLogin()">
+                <i class="fas fa-user-shield"></i>Admin
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* --- DATA MANAGEMENT --- */
+    let currentUser = JSON.parse(localStorage.getItem('ax_session')) || null;
+    let services = JSON.parse(localStorage.getItem('ax_services')) || [
+        {name: "Telegram", price: 0.25, icon: "fab fa-telegram"},
+        {name: "WhatsApp", price: 0.35, icon: "fab fa-whatsapp"},
+        {name: "Instagram", price: 0.20, icon: "fab fa-instagram"},
+        {name: "TikTok", price: 0.15, icon: "fab fa-tiktok"}
+    ];
+    let settings = JSON.parse(localStorage.getItem('ax_settings')) || {
+        card: "4127 0000 0000 0000",
+        name: "RAHIM O.",
+        api: "V7-API-KEY-DEFAULT"
+    };
+
+    window.onload = function() {
+        if(currentUser) {
+            renderApp();
+        }
+        // Referal linkini yoxla
+        let urlParams = new URLSearchParams(window.location.search);
+        let ref = urlParams.get('ref');
+        if(ref) localStorage.setItem('pending_ref', ref);
+    };
+
+    /* --- AUTHENTICATION --- */
+    function toggleAuthForms(isLogin) {
+        document.getElementById('login-box').classList.toggle('hidden', !isLogin);
+        document.getElementById('reg-box').classList.toggle('hidden', isLogin);
+    }
+
+    function handleAuth(isLogin) {
+        if(isLogin) {
+            let u = document.getElementById('log-u').value.trim();
+            let p = document.getElementById('log-p').value.trim();
+            let stored = JSON.parse(localStorage.getItem('db_user_' + u));
+            if(stored && stored.pass === p) {
+                currentUser = stored;
+                saveAndRender();
+            } else alert("Məlumatlar yanlışdır!");
+        } else {
+            let u = document.getElementById('reg-u').value.trim();
+            let p = document.getElementById('reg-p').value.trim();
+            if(u.length < 3) return alert("İstifadəçi adı çox qısadır!");
+            if(localStorage.getItem('db_user_' + u)) return alert("Bu istifadəçi artıq mövcuddur!");
+            
+            let id = "#AX" + Math.floor(1000 + Math.random() * 9000);
+            let newUser = {user: u, pass: p, balance: 0.00, id: id, refCount: 0, history: []};
+            
+            // Referal bonusu yoxla
+            let pRef = localStorage.getItem('pending_ref');
+            if(pRef) {
+                let ownerU = localStorage.getItem('map_id_' + pRef);
+                if(ownerU) {
+                    let owner = JSON.parse(localStorage.getItem('db_user_' + ownerU));
+                    owner.refCount++;
+                    if(owner.refCount >= 20) { owner.balance += 1.0; owner.refCount = 0; }
+                    localStorage.setItem('db_user_' + ownerU, JSON.stringify(owner));
+                }
+            }
+
+            localStorage.setItem('db_user_' + u, JSON.stringify(newUser));
+            localStorage.setItem('map_id_' + id, u);
+            alert("Qeydiyyat uğurlu! Giriş edə bilərsiniz.");
+            toggleAuthForms(true);
+        }
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('ax_session', JSON.stringify(currentUser));
+        localStorage.setItem('db_user_' + currentUser.user, JSON.stringify(currentUser));
+        renderApp();
+    }
+
+    function renderApp() {
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('main-screen').classList.remove('hidden');
+        
+        // Balans və ID yenilə
+        document.getElementById('main-bal').innerText = currentUser.balance.toFixed(2);
+        document.getElementById('user-id-tag').innerText = currentUser.id;
+        document.getElementById('m-user-id').innerText = "ID: " + currentUser.id;
+        document.getElementById('ref-count-disp').innerText = currentUser.refCount;
+        document.getElementById('ref-url').value = window.location.origin + window.location.pathname + "?ref=" + currentUser.id;
+        
+        // Kart məlumatları
+        document.getElementById('disp-card').innerText = settings.card;
+        document.getElementById('disp-name').innerText = settings.name;
+
+        // Xidmətləri Render et
+        let hSec = document.getElementById('home-section');
+        hSec.innerHTML = "<h3>Populyar Xidmətlər</h3>";
+        services.forEach(s => {
+            hSec.innerHTML += `
+                <div class="srv-item" onclick="buyService('${s.name}', ${s.price})">
+                    <div class="srv-left">
+                        <div class="srv-icon"><i class="${s.icon}"></i></div>
+                        <span class="srv-name">${s.name}</span>
+                    </div>
+                    <span class="srv-price">${s.price.toFixed(2)} AZN</span>
+                </div>
+            `;
+        });
+    }
+
+    /* --- NAVİQASİYA --- */
+    function switchSection(sect) {
+        const sections = ['home-section', 'funds-section', 'ref-section', 'about-section', 'faq-section', 'history-section', 'admin-section'];
+        sections.forEach(s => document.getElementById(s).classList.add('hidden'));
+        document.getElementById(sect + '-section').classList.remove('hidden');
+        
+        // Nav aktivliyini dəyiş
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(l => l.classList.remove('active'));
+        if(sect === 'home') navLinks[0].classList.add('active');
+        if(sect === 'funds') navLinks[1].classList.add('active');
+        if(sect === 'ref') navLinks[2].classList.add('active');
+
+        if(document.getElementById('side-menu').classList.contains('active')) toggleSideMenu();
+    }
+
+    function toggleSideMenu() {
+        document.getElementById('side-menu').classList.toggle('active');
+        document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('active') ? 'block' : 'none';
+    }
+
+    /* --- SATIN ALMA --- */
+    function buyService(name, price) {
+        if(currentUser.balance < price) {
+            alert("Balansınız kifayət deyil! Zəhmət olmasa balansı artırın.");
+            switchSection('funds');
+            return;
+        }
+
+        if(confirm(`${name} xidməti üçün ${price} AZN balansınızdan çıxılsın?`)) {
+            const loader = document.getElementById('buy-loader');
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                currentUser.balance -= price;
+                currentUser.history.unshift({name: name, price: price, date: new Date().toLocaleString(), status: "Uğurlu"});
+                saveAndRender();
+                loader.classList.add('hidden');
+                alert("Nömrə uğurla alındı! SMS bölməsinə keçid edin (Tezliklə).");
+            }, 3000);
+        }
+    }
+
+    /* --- ADMIN FUNKSİYALARI --- */
+    function handleAdminLogin() {
+        let pass = prompt("Admin Şifrəsini daxil edin:");
+        if(pass === "Rahim058") {
+            switchSection('admin');
+        } else {
+            alert("Giriş rədd edildi!");
+        }
+    }
+
+    function adminAddBalance() {
+        let id = document.getElementById('adm-target-id').value.trim();
+        let amt = parseFloat(document.getElementById('adm-amount').value);
+        let uName = localStorage.getItem('map_id_' + id);
+        
+        if(uName) {
+            let targetUser = JSON.parse(localStorage.getItem('db_user_' + uName));
+            targetUser.balance += amt;
+            localStorage.setItem('db_user_' + uName, JSON.stringify(targetUser));
+            
+            // Əgər admin öz balansını artırırsa dərhal yenilə
+            if(currentUser.id === id) {
+                currentUser.balance = targetUser.balance;
+                saveAndRender();
+            }
+            alert(id + " balansına " + amt + " AZN əlavə edildi!");
+        } else {
+            alert("İstifadəçi tapılmadı! ID-ni düzgün daxil edin (Məs: #AX1234)");
+        }
+    }
+
+    function adminSaveSettings() {
+        settings.card = document.getElementById('adm-card-no').value;
+        settings.name = document.getElementById('adm-card-name').value;
+        settings.api = document.getElementById('adm-api-key').value;
+        localStorage.setItem('ax_settings', JSON.stringify(settings));
+        alert("Sistem ayarları yeniləndi!");
+        renderApp();
+    }
+
+    function adminAddService() {
+        let n = document.getElementById('adm-srv-name').value;
+        let p = parseFloat(document.getElementById('adm-srv-price').value);
+        let i = document.getElementById('adm-srv-icon').value || "fas fa-sms";
+        
+        if(n && p) {
+            services.push({name: n, price: p, icon: i});
+            localStorage.setItem('ax_services', JSON.stringify(services));
+            alert("Yeni xidmət aktiv edildi!");
+            renderApp();
+        }
+    }
+
+    /* --- DİGƏR --- */
+    function copyReferral() {
+        let copyText = document.getElementById('ref-url');
+        copyText.select();
+        document.execCommand("copy");
+        alert("Referal linkiniz kopyalandı!");
+    }
+
+    function logout() {
+        localStorage.removeItem('ax_session');
+        location.reload();
+    }
+
+</script>
+
+</body>
+</html>
