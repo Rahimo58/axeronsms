@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AXERON PRO | Ultimate Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --p: #00f2ff; --bg: #020408; --card: #0a0e14; --border: #16212e;
+            --text: #ffffff; --error: #ff0055; --success: #00ff88; --warning: #ffcc00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+
+        /* SMOOTH TICKER */
+        #ticker {
+            background: linear-gradient(90deg, #ff0000, #990000);
+            height: 35px; display: none; align-items: center; position: sticky; top: 0; z-index: 10000;
+            overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .ticker-move { display: inline-block; white-space: nowrap; padding-left: 100%; animation: move 20s linear infinite; font-weight: 700; will-change: transform; }
+        @keyframes move { from { transform: translate3d(0,0,0); } to { transform: translate3d(-100%,0,0); } }
+
+        .app-container { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; background: var(--bg); border: 1px solid var(--border); position: relative; padding-bottom: 100px; }
+        .hidden { display: none !important; }
+
+        /* UI ELEMENTS */
+        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .btn-p { background: var(--p); color: #000; }
+        .btn-p:active { transform: scale(0.95); box-shadow: 0 0 20px var(--p); }
+
+        input, select { width: 100%; padding: 15px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; color: #fff; margin-bottom: 15px; }
+
+        /* CARDS */
+        .glass-card { background: linear-gradient(135deg, #0d1117, #001d20); margin: 15px; padding: 25px; border-radius: 20px; border: 1px solid var(--p); text-align: center; }
+        .service-item { background: var(--card); border: 1px solid var(--border); margin: 10px 15px; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* NAV DOCK */
+        .nav-dock { position: fixed; bottom: 0; width: 100%; max-width: 500px; background: #05070a; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--border); z-index: 999; }
+        .nav-item { color: #555; text-align: center; font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: var(--p); }
+
+        /* ADMIN SECTION */
+        .admin-page { padding: 20px; }
+        .admin-block { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
+        .admin-block h3 { color: var(--p); font-size: 14px; margin-bottom: 10px; font-family: 'Orbitron'; }
+
+        /* FAQ */
+        .faq-item { background: #0d1117; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--p); }
+        
+        /* CHAT BUTTON */
+        .chat-btn { position: fixed; bottom: 85px; right: 20px; background: #0088cc; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 998; }
+    </style>
+</head>
+<body>
+
+<div id="ticker"><div class="ticker-move" id="ticker-msg">Diqqət! Bütün sistemlər yeniləndi.</div></div>
+
+<div class="app-container">
+    
+    <div id="auth-layer" style="padding: 50px 30px; text-align: center;">
+        <div style="font-family:'Orbitron'; font-size: 40px; color:var(--p); margin-bottom: 40px;">AXERON</div>
+        <div id="login-form">
+            <input type="text" id="l-u" placeholder="İstifadəçi adı">
+            <input type="password" id="l-p" placeholder="Şifrə">
+            <button class="btn btn-p" onclick="core.login()">GİRİŞ ET</button>
+            <p style="margin-top:20px; color:var(--p);" onclick="core.toggleAuth(false)">Qeydiyyatdan keç</p>
+        </div>
+        <div id="reg-form" class="hidden">
+            <input type="text" id="r-u" placeholder="Yeni İstifadəçi adı">
+            <input type="email" id="r-e" placeholder="E-poçt ünvanı">
+            <input type="password" id="r-p" placeholder="Şifrə">
+            <button class="btn btn-p" onclick="core.register()">TƏSDİQLƏ</button>
+            <p style="margin-top:20px; color:var(--p);" onclick="core.toggleAuth(true)">Geri qayıt</p>
+        </div>
+    </div>
+
+    <div id="main-layer" class="hidden">
+        <header style="padding:20px; display:flex; justify-content:space-between; align-items:center; background:var(--card);">
+            <i class="fas fa-headset" onclick="core.switchTab('support')"></i>
+            <span style="font-family:'Orbitron'; font-weight:900;">AXERON PANEL</span>
+            <i class="fas fa-user-cog" onclick="core.adminAuth()"></i>
+        </header>
+
+        <div id="tab-home">
+            <div class="glass-card">
+                <div style="font-size:12px; opacity:0.6; letter-spacing:2px;">BALANSINIZ</div>
+                <div style="font-family:'Orbitron'; font-size:35px; color:var(--p);"><span id="u-bal">0.00</span> AZN</div>
+                <div id="u-id" style="font-size:11px; margin-top:5px; color:var(--p);">ID: #000000</div>
+            </div>
+            
+            <div style="padding: 0 15px;">
+                <button class="btn btn-p" onclick="core.switchTab('payment')" style="background:var(--success); color:#000;">BALANS ARTIR (+)</button>
+            </div>
+
+            <div id="services" style="margin-top:20px;">
+                <h4 style="margin: 15px; color:var(--p);">Aktiv Xidmətlər</h4>
+                </div>
+        </div>
+
+        <div id="tab-payment" class="hidden" style="padding: 20px;">
+            <h3 style="font-family:'Orbitron'; color:var(--p); margin-bottom:20px;">ÖDƏNİŞ ÜSULU</h3>
+            <div style="background:#111; padding:20px; border-radius:15px; border:1px dashed var(--p); text-align:center;">
+                <p style="font-size:12px; margin-bottom:10px; opacity:0.7;">Bank Kartı ilə ödəniş:</p>
+                <div id="card-display" style="font-size:20px; font-weight:bold; letter-spacing:2px; margin-bottom:10px;">---- ---- ---- ----</div>
+                <div id="card-name-display" style="font-size:14px; color:var(--p);">AD SOYAD</div>
+                <hr style="margin:15px 0; opacity:0.1;">
+                <p style="font-size:11px; color:var(--error);">Ödəniş etdikdən sonra qəbzi Canlı Dəstəyə göndərin!</p>
+            </div>
+        </div>
+
+        <div id="tab-support" class="hidden" style="padding: 20px;">
+            <h3 style="font-family:'Orbitron'; color:var(--p); margin-bottom:20px;">TEZ-TEZ VERİLƏN SUALLAR</h3>
+            <div class="faq-item"><b>Sual:</b> Balans nə vaxt yüklənir?<br><small>Cavab: Qəbz göndərildikdən sonra 5-10 dəqiqə ərzində.</small></div>
+            <div class="faq-item"><b>Sual:</b> Nömrəyə kod gəlməsə nə olur?<br><small>Cavab: Balansınız dərhal geri qaytarılır.</small></div>
+            <button class="btn btn-p" style="background:#0088cc; color:white;" onclick="window.open('https://t.me/SeninUserin')">TELEGRAM DƏSTƏK</button>
+        </div>
+
+        <div id="tab-admin" class="hidden admin-page">
+            <h2 style="font-family:'Orbitron'; color:var(--error); margin-bottom:20px;">ADMIN TERMINAL</h2>
+            
+            <div class="admin-block">
+                <h3>📢 ELAN VƏ KART</h3>
+                <input type="text" id="adm-ticker" placeholder="Elan yazısı">
+                <input type="text" id="adm-card" placeholder="Kart nömrəsi">
+                <input type="text" id="adm-card-name" placeholder="Kart sahibi">
+                <button class="btn btn-p" onclick="core.saveSettings()">YADDA SAXLA</button>
+            </div>
+
+            <div class="admin-block">
+                <h3>💰 BALANS İDARƏSİ (ARTIR/SİL)</h3>
+                <input type="text" id="adm-id" placeholder="İstifadəçi ID-si">
+                <input type="number" id="adm-amt" placeholder="Məbləğ (məs: 5 və ya -5)">
+                <button class="btn btn-p" onclick="core.updateUserBalance()" style="background:var(--success);">BALANSI DƏYİŞ</button>
+            </div>
+
+            <div class="admin-block">
+                <h3>🚫 İSTİFADƏÇİ BLOKLA</h3>
+                <input type="text" id="adm-block-id" placeholder="İstifadəçi ID-si">
+                <button class="btn btn-p" onclick="core.blockUser()" style="background:var(--error); color:#fff;">BLOKLA / AÇ</button>
+            </div>
+
+            <button class="btn btn-p" onclick="core.switchTab('home')" style="background:#333; color:#fff;">PANELƏ QAYIT</button>
+        </div>
+
+        <nav class="nav-dock">
+            <div class="nav-item active" onclick="core.switchTab('home')"><i class="fas fa-home"></i><br>HOME</div>
+            <div class="nav-item" onclick="core.switchTab('payment')"><i class="fas fa-wallet"></i><br>BALANS</div>
+            <div class="nav-item" onclick="core.switchTab('support')"><i class="fas fa-question-circle"></i><br>FAQ</div>
+            <div class="nav-item" onclick="core.logout()" style="color:var(--error);"><i class="fas fa-sign-out-alt"></i><br>ÇIXIŞ</div>
+        </nav>
+    </div>
+</div>
+
+<a href="https://t.me/SeninUserin" class="chat-btn"><i class="fab fa-telegram-plane" style="color:white; font-size:24px;"></i></a>
+
+<script>
+    const core = {
+        db: JSON.parse(localStorage.getItem('ax_db')) || [],
+        session: JSON.parse(localStorage.getItem('ax_session')) || null,
+        settings: JSON.parse(localStorage.getItem('ax_settings')) || { msg: "Xoş gəlmisiniz!", card: "0000 0000 0000 0000", name: "AD SOYAD" },
+
+        init() {
+            if(this.session) {
+                // Bloklanma yoxlanışı
+                const user = this.db.find(x => x.id === this.session.id);
+                if(user && user.blocked) {
+                    alert("Hesabınız bloklanıb!");
+                    this.logout();
+                } else {
+                    this.showMain();
+                }
+            }
+            this.applySettings();
+            this.renderServices();
+        },
+
+        register() {
+            const u = document.getElementById('r-u').value.trim();
+            const e = document.getElementById('r-e').value.trim();
+            const p = document.getElementById('r-p').value.trim();
+            if(!u || !p || !e.includes('@')) return alert("Məlumatları düzgün daxil edin!");
+            if(this.db.find(x => x.u === u)) return alert("Bu ad artıq alınıb!");
+
+            const newUser = { u, e, p, id: Math.floor(100000 + Math.random() * 899999), bal: 0, blocked: false };
+            this.db.push(newUser);
+            localStorage.setItem('ax_db', JSON.stringify(this.db));
+            alert("Uğurla qeydiyyatdan keçdiniz! Giriş edin.");
+            this.toggleAuth(true);
+        },
+
+        login() {
+            const u = document.getElementById('l-u').value.trim();
+            const p = document.getElementById('l-p').value.trim();
+            const user = this.db.find(x => x.u === u && x.p === p);
+            if(user) {
+                if(user.blocked) return alert("Sizin hesabınız admin tərəfindən bloklanıb!");
+                this.session = user;
+                localStorage.setItem('ax_session', JSON.stringify(user));
+                this.showMain();
+            } else alert("Ad və ya şifrə səhvdir!");
+        },
+
+        showMain() {
+            document.getElementById('auth-layer').classList.add('hidden');
+            document.getElementById('main-layer').classList.remove('hidden');
+            document.getElementById('u-bal').innerText = this.session.bal.toFixed(2);
+            document.getElementById('u-id').innerText = "ID: #" + this.session.id;
+        },
+
+        renderServices() {
+            const srvs = [
+                {n: "Telegram (Rusiya)", p: 0.25, i: "fa-paper-plane"},
+                {n: "WhatsApp (Türkiyə)", p: 0.50, i: "fa-whatsapp"},
+                {n: "Instagram", p: 0.15, i: "fa-instagram"}
+            ];
+            let h = "";
+            srvs.forEach(s => {
+                h += `<div class="service-item">
+                    <div><i class="fab ${s.i}" style="color:var(--p); margin-right:10px;"></i> ${s.n}</div>
+                    <div style="color:var(--p); font-weight:bold;">${s.p} AZN</div>
+                </div>`;
+            });
+            document.getElementById('services').innerHTML = h;
+        },
+
+        // --- ADMIN FUNKSIYALARI ---
+        adminAuth() {
+            const p = prompt("Admin Şifrəsi:");
+            if(p === "Rahim058") this.switchTab('admin');
+            else alert("Giriş qadağandır!");
+        },
+
+        saveSettings() {
+            this.settings.msg = document.getElementById('adm-ticker').value || this.settings.msg;
+            this.settings.card = document.getElementById('adm-card').value || this.settings.card;
+            this.settings.name = document.getElementById('adm-card-name').value || this.settings.name;
+            localStorage.setItem('ax_settings', JSON.stringify(this.settings));
+            this.applySettings();
+            alert("Ayarlar yadda saxlanıldı!");
+        },
+
+        applySettings() {
+            document.getElementById('ticker').style.display = 'flex';
+            document.getElementById('ticker-msg').innerText = this.settings.msg;
+            document.getElementById('card-display').innerText = this.settings.card;
+            document.getElementById('card-name-display').innerText = this.settings.name;
+        },
+
+        updateUserBalance() {
+            const id = document.getElementById('adm-id').value;
+            const amt = parseFloat(document.getElementById('adm-amt').value);
+            let user = this.db.find(x => x.id == id);
+            if(user) {
+                user.bal += amt;
+                localStorage.setItem('ax_db', JSON.stringify(this.db));
+                if(this.session.id == id) {
+                    this.session.bal = user.bal;
+                    localStorage.setItem('ax_session', JSON.stringify(this.session));
+                    this.showMain();
+                }
+                alert("Balans yeniləndi! Yeni balans: " + user.bal);
+            } else alert("İstifadəçi tapılmadı!");
+        },
+
+        blockUser() {
+            const id = document.getElementById('adm-block-id').value;
+            let user = this.db.find(x => x.id == id);
+            if(user) {
+                user.blocked = !user.blocked;
+                localStorage.setItem('ax_db', JSON.stringify(this.db));
+                alert(user.blocked ? "İstifadəçi bloklandı!" : "Blok açıldı!");
+            } else alert("İstifadəçi tapılmadı!");
+        },
+
+        switchTab(t) {
+            ['home', 'payment', 'support', 'admin'].forEach(x => document.getElementById('tab-'+x).classList.add('hidden'));
+            document.getElementById('tab-'+t).classList.remove('hidden');
+            // Naviqasiya ikonlarını rənglə
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        },
+
+        toggleAuth(isL) {
+            document.getElementById('login-form').classList.toggle('hidden', !isL);
+            document.getElementById('reg-form').classList.toggle('hidden', isL);
+        },
+
+        logout() { localStorage.removeItem('ax_session'); location.reload(); }
+    };
+
+    window.onload = () => core.init();
+</script>
+</body>
+</html>
