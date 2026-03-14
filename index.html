@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXERON PRO | Professional Elan Sistemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff4f08;
+            --secondary: #212c3d;
+            --vip-color: #ffd700;
+            --vip-bg: #fffcf0;
+            --bg-body: #f1f3f7;
+            --white: #ffffff;
+            --text-main: #212c3d;
+            --text-light: #8d94ad;
+            --border: #e1e4e9;
+            --success: #28a745;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; transition: 0.3s; }
+        .hidden { display: none !important; }
+
+        /* HEADER & NAVIGATION */
+        header { background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .top-bar { max-width: 1200px; margin: 0 auto; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+        
+        .btn-add { background: var(--primary); color: var(--white); padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; box-shadow: 0 4px 10px rgba(255, 79, 8, 0.2); }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 79, 8, 0.3); }
+
+        /* HERO SEARCH */
+        .hero { background: var(--secondary); padding: 50px 20px; text-align: center; color: var(--white); }
+        .search-container { max-width: 800px; margin: 25px auto 0; display: flex; gap: 10px; background: var(--white); padding: 8px; border-radius: 12px; }
+        .search-container input { flex: 1; border: none; padding: 12px; font-size: 16px; outline: none; }
+        .search-container select { border: none; border-left: 1px solid var(--border); padding: 0 15px; color: var(--text-light); outline: none; background: transparent; }
+        .btn-search { background: var(--primary); border: none; color: white; padding: 12px 25px; border-radius: 8px; font-weight: 600; }
+
+        /* CATEGORIES */
+        .cats { max-width: 1200px; margin: -30px auto 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; padding: 0 20px; }
+        .cat-item { background: var(--white); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+        .cat-item:hover { transform: translateY(-5px); color: var(--primary); }
+        .cat-item i { font-size: 24px; margin-bottom: 8px; display: block; }
+        .cat-item span { font-size: 12px; font-weight: 600; }
+
+        /* ELAN GRID */
+        .content-main { max-width: 1200px; margin: 0 auto; padding: 0 20px 50px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-header h2 { font-size: 20px; font-weight: 700; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        /* ELAN CARD */
+        .card { background: var(--white); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: 0.3s; }
+        .card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .card.vip-card { background: var(--vip-bg); border-color: var(--vip-color); }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-body { padding: 15px; }
+        .price { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+        .title { font-size: 14px; color: var(--text-light); height: 40px; overflow: hidden; margin-bottom: 10px; }
+        .city-date { font-size: 12px; color: #b2b8c4; display: flex; justify-content: space-between; }
+        .vip-tag { position: absolute; top: 10px; left: 10px; background: var(--vip-color); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 5px; }
+        
+        /* MODALS */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 30px; border-radius: 20px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; color: var(--text-light); cursor: pointer; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--text-light); }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; }
+        .input-group input:focus { border-color: var(--primary); }
+
+        /* USER DRAWER */
+        .profile-btn { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .avatar { width: 35px; height: 35px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); }
+
+        /* ADMIN AREA */
+        .admin-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8f9fa; z-index: 5000; padding: 40px; overflow-y: auto; }
+        .admin-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .admin-table th { background: var(--secondary); color: white; }
+        
+        /* NOTIFICATION */
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--secondary); color: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; transform: translateY(100px); transition: 0.5s; }
+        .toast.show { transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 24px; }
+            .search-container { flex-direction: column; }
+            .search-container select { border-left: none; border-top: 1px solid var(--border); padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="top-bar">
+        <a href="#" class="logo" onclick="location.reload()">AXERON</a>
+        <div class="nav-actions">
+            <div id="auth-ui">
+                <button class="btn-add" style="background:#eee; color:#333; margin-right:10px" onclick="ax.showModal('login')">Giriş</button>
+            </div>
+            <button class="btn-add" onclick="ax.checkElanFlow()">+ Yeni Elan</button>
+            <i class="fas fa-fingerprint" onclick="ax.adminGate()" style="margin-left:15px; color:#ccc; cursor:pointer"></i>
+        </div>
+    </div>
+</header>
+
+<div class="hero">
+    <h1>Arzuladığın hər şey burada!</h1>
+    <div class="search-container">
+        <input type="text" id="mainSearch" placeholder="Axtarış..." onkeyup="ax.search()">
+        <select id="catFilter" onchange="ax.search()">
+            <option value="all">Bütün kateqoriyalar</option>
+            <option value="transport">Nəqliyyat</option>
+            <option value="electronics">Elektronika</option>
+            <option value="realty">Daşınmaz Əmlak</option>
+        </select>
+        <button class="btn-search">Axtar</button>
+    </div>
+</div>
+
+<div class="cats">
+    <div class="cat-item" onclick="ax.filterCat('transport')"><i class="fas fa-car" style="color:#007bff"></i><span>Nəqliyyat</span></div>
+    <div class="cat-item" onclick="ax.filterCat('electronics')"><i class="fas fa-laptop" style="color:#ffc107"></i><span>Elektronika</span></div>
+    <div class="cat-item" onclick="ax.filterCat('realty')"><i class="fas fa-home" style="color:#28a745"></i><span>Əmlak</span></div>
+    <div class="cat-item" onclick="ax.filterCat('fashion')"><i class="fas fa-tshirt" style="color:#e83e8c"></i><span>Geyim</span></div>
+    <div class="cat-item" onclick="ax.filterCat('services')"><i class="fas fa-tools" style="color:#17a2b8"></i><span>Xidmətlər</span></div>
+</div>
+
+<div class="content-main">
+    <div class="section-header">
+        <h2 id="viewTitle">SON ELANLAR</h2>
+        <div style="font-size:13px; color:var(--text-light)">Ümumi: <span id="totalCount">0</span> elan</div>
+    </div>
+    <div id="elanGrid" class="grid">
+        </div>
+</div>
+
+<div id="authModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <span class="close-modal" onclick="ax.closeModals()">&times;</span>
+        <h2 id="authTitle" style="margin-bottom:20px;">Giriş Et</h2>
+        <div class="input-group">
+            <label>Adınız</label>
+            <input type="text" id="uName" placeholder="Ad Soyad">
+        </div>
+        <div class="input-group">
+            <label>Mobil Nömrə</label>
+            <input type="text" id="uPhone" placeholder="0500000000">
+        </div>
+        <div class="input-group">
+            <label>Şifrə</label>
+            <input type="password" id="uPass" placeholder="******">
+        </div>
+        <button class="btn-add" style="width:100%; padding:15px" onclick="ax.handleAuth()">DAVAM ET</button>
+        <p id="authToggle" style="text-align:center; margin-top:15px; font-size:13px; cursor:pointer; color:var(--primary)" onclick="ax.toggleAuthMode()">Hesabın yoxdur? Qeydiyyat</p>
+    </div>
+</div>
+
+<div id="elanModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <span class="close-modal" onclick="ax.closeModals()">&times;</span>
+        <h2 style="margin-bottom:20px;">Yeni Elan Yerləşdir</h2>
+        <div class="input-group">
+            <label>Kateqoriya</label>
+            <select id="eCat">
+                <option value="transport">Nəqliyyat</option>
+                <option value="electronics">Elektronika</option>
+                <option value="realty">Daşınmaz Əmlak</option>
+                <option value="fashion">Geyim</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Başlıq</label>
+            <input type="text" id="eTitle" placeholder="Məs: iPhone 13 Pro">
+        </div>
+        <div class="input-group">
+            <label>Qiymət (AZN)</label>
+            <input type="number" id="ePrice" placeholder="Məs: 1200">
+        </div>
+        <div class="input-group">
+            <label>Şəkil Linki (URL)</label>
+            <input type="text" id="eImg" placeholder="https://...">
+        </div>
+        <div class="input-group">
+            <label>Təsvir</label>
+            <textarea id="eDesc" rows="3" placeholder="Məhsul haqqında məlumat..."></textarea>
+        </div>
+        <div id="paymentNotice" style="font-size:12px; color:var(--primary); margin-bottom:10px;"></div>
+        <button class="btn-add" style="width:100%; padding:15px" onclick="ax.submitElan()">PAYLAŞ</button>
+    </div>
+</div>
+
+<div id="adminPanel" class="admin-page hidden">
+    <div style="display:flex; justify-content:space-between; margin-bottom:30px">
+        <h2><i class="fas fa-user-shield"></i> Admin Kontrol Paneli</h2>
+        <button class="btn-add" style="background:#333" onclick="ax.closeAdmin()">Panelden Çıx</button>
+    </div>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-bottom:30px">
+        <div style="background:white; padding:20px; border-radius:15px;">
+            <h3>Balans Artır</h3>
+            <input type="text" id="adTargetPhone" placeholder="İstifadəçi Nömrəsi" style="margin:10px 0; padding:10px; width:100%">
+            <input type="number" id="adAmount" placeholder="Məbləğ (AZN)" style="margin:10px 0; padding:10px; width:100%">
+            <button class="btn-add" style="width:100%" onclick="ax.adminAddBal()">Balansı Yüklə</button>
+        </div>
+        <div style="background:white; padding:20px; border-radius:15px;">
+            <h3>Sistem Kartı</h3>
+            <input type="text" id="adCard" placeholder="Kart No" style="margin:10px 0; padding:10px; width:100%">
+            <button class="btn-add" style="width:100%; background:var(--secondary)" onclick="ax.adminUpdateCard()">Yadda Saxla</button>
+        </div>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Şəkil</th>
+                <th>Başlıq</th>
+                <th>Sahibi</th>
+                <th>Qiymət</th>
+                <th>Status</th>
+                <th>Əməliyyatlar</th>
+            </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+    </table>
+</div>
+
+<div id="toast" class="toast">Mesaj bura gələcək</div>
+
+<script>
+/* ============================================================
+   AXERON SİSTEM MƏNTİQİ (DÜNYA STANDARTINDA)
+   ============================================================ */
+
+const ax = {
+    users: JSON.parse(localStorage.getItem('ax_users')) || [],
+    elans: JSON.parse(localStorage.getItem('ax_elans')) || [],
+    ses: JSON.parse(localStorage.getItem('ax_ses')) || null,
+    conf: JSON.parse(localStorage.getItem('ax_conf')) || {card: "4127 0000 0000 0000", adminPass: "Rahim058"},
+    isReg: false,
+
+    init() {
+        this.renderElans();
+        this.updateAuthUI();
+        console.log("Axeron System Ready.");
+    },
+
+    /* --- AUTHENTICATION --- */
+    showModal(type) {
+        if(type === 'login') {
+            document.getElementById('authModal').classList.remove('hidden');
+        } else if(type === 'elan') {
+            const cost = this.ses.elanCount > 0 ? 1 : 0;
+            document.getElementById('paymentNotice').innerText = cost > 0 ? `Qeyd: Balansınızdan ${cost} AZN çıxılacaq.` : "İlk elanınız pulsuzdur!";
+            document.getElementById('elanModal').classList.remove('hidden');
+        }
+    },
+
+    closeModals() {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+    },
+
+    toggleAuthMode() {
+        this.isReg = !this.isReg;
+        document.getElementById('authTitle').innerText = this.isReg ? "Qeydiyyatdan Keç" : "Giriş Et";
+        document.getElementById('authToggle').innerText = this.isReg ? "Artıq hesabın var? Giriş" : "Hesabın yoxdur? Qeydiyyat";
+    },
+
+    handleAuth() {
+        const name = document.getElementById('uName').value.trim();
+        const phone = document.getElementById('uPhone').value.trim();
+        const pass = document.getElementById('uPass').value.trim();
+
+        if(!phone || !pass) return this.notify("Xanaları doldurun!");
+
+        if(this.isReg) {
+            if(this.users.find(u => u.phone === phone)) return this.notify("Bu nömrə artıq qeydiyyatdadır!");
+            const newUser = { name, phone, pass, bal: 0, elanCount: 0, joinDate: new Date().toLocaleDateString() };
+            this.users.push(newUser);
+            this.save();
+            this.notify("Qeydiyyat tamamlandı! Giriş edin.");
+            this.toggleAuthMode();
+        } else {
+            const user = this.users.find(u => u.phone === phone && u.pass === pass);
+            if(!user) return this.notify("Nömrə və ya şifrə səhvdir!");
+            this.ses = user;
+            localStorage.setItem('ax_ses', JSON.stringify(user));
+            this.notify(`Xoş gəldin, ${user.name}!`);
+            this.closeModals();
+            this.updateAuthUI();
+        }
+    },
+
+    updateAuthUI() {
+        const ui = document.getElementById('auth-ui');
+        if(this.ses) {
+            ui.innerHTML = `
+                <div class="profile-btn" onclick="ax.showProfileMenu()">
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div>
+                        <div style="font-size:12px; line-height:1">${this.ses.name}</div>
+                        <div style="color:var(--success); font-size:11px">${this.ses.bal.toFixed(2)} AZN</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size:10px; margin-left:5px"></i>
+                </div>
+                <button onclick="ax.logout()" style="background:none; border:none; margin-left:10px; color:red"><i class="fas fa-power-off"></i></button>
+            `;
+        }
+    },
+
+    logout() {
+        localStorage.removeItem('ax_ses');
+        location.reload();
+    },
+
+    /* --- ELAN FLOW --- */
+    checkElanFlow() {
+        if(!this.ses) return this.showModal('login');
+        this.showModal('elan');
+    },
+
+    submitElan() {
+        const title = document.getElementById('eTitle').value.trim();
+        const price = document.getElementById('ePrice').value;
+        const img = document.getElementById('eImg').value.trim();
+        const cat = document.getElementById('eCat').value;
+        const desc = document.getElementById('eDesc').value;
+
+        if(!title || !price) return this.notify("Başlıq və qiymət yazın!");
+
+        let cost = this.ses.elanCount > 0 ? 1 : 0;
+        if(this.ses.bal < cost) return this.notify(`Balans yetərli deyil! Minimum ${cost} AZN lazımdır.`);
+
+        // Balansı çıx
+        this.ses.bal -= cost;
+        this.ses.elanCount++;
+        
+        const newElan = {
+            id: Date.now(),
+            owner: this.ses.phone,
+            ownerName: this.ses.name,
+            title, price, img, cat, desc,
+            vip: false,
+            date: "Bakı, " + new Date().toLocaleDateString(),
+            timestamp: Date.now()
+        };
+
+        this.elans.unshift(newElan);
+        this.syncUser();
+        this.save();
+        this.closeModals();
+        this.renderElans();
+        this.notify("Elanınız uğurla yerləşdirildi!");
+    },
+
+    renderElans(data = this.elans) {
+        const grid = document.getElementById('elanGrid');
+        // VİP-lər ən başda görünsün
+        const sorted = [...data].sort((a,b) => b.vip - a.vip || b.timestamp - a.timestamp);
+        
+        let html = "";
+        sorted.forEach(e => {
+            html += `
+                <div class="card ${e.vip ? 'vip-card' : ''}">
+                    ${e.vip ? '<div class="vip-tag">VİP</div>' : ''}
+                    <img src="${e.img || 'https://via.placeholder.com/300x200?text=Axeron'}" onerror="this.src='https://via.placeholder.com/300x200?text=Səkil+Yoxdur'">
+                    <div class="card-body">
+                        <div class="price">${e.price} AZN</div>
+                        <div class="title">${e.title}</div>
+                        <div class="city-date">
+                            <span>${e.date}</span>
+                            ${this.ses && this.ses.phone === e.owner ? `<i class="fas fa-bolt" style="color:var(--primary)" onclick="ax.showPromo(${e.id})"></i>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        grid.innerHTML = html || "<div style='grid-column: 1/-1; text-align:center; padding:50px;'>Heç bir elan tapılmadı.</div>";
+        document.getElementById('totalCount').innerText = sorted.length;
+    },
+
+    /* --- SEARCH & FILTER --- */
+    search() {
+        const q = document.getElementById('mainSearch').value.toLowerCase();
+        const cat = document.getElementById('catFilter').value;
+        
+        const filtered = this.elans.filter(e => {
+            const matchQ = e.title.toLowerCase().includes(q);
+            const matchCat = cat === 'all' || e.cat === cat;
+            return matchQ && matchCat;
+        });
+        
+        this.renderElans(filtered);
+    },
+
+    filterCat(cat) {
+        document.getElementById('catFilter').value = cat;
+        this.search();
+        document.getElementById('viewTitle').innerText = cat.toUpperCase() + " ELANLARI";
+    },
+
+    /* --- PROMOTION (VIP/UP) --- */
+    showPromo(id) {
+        const choice = prompt("Hansı xidməti istəyirsiniz?\n1. İrəli çək (0.50 AZN)\n2. VIP et (2.00 AZN)");
+        const elan = this.elans.find(e => e.id === id);
+        
+        if(choice === "1") {
+            if(this.ses.bal < 0.5) return this.notify("Balans azdır!");
+            this.ses.bal -= 0.5;
+            elan.timestamp = Date.now();
+            this.notify("Elan irəli çəkildi!");
+        } else if(choice === "2") {
+            if(this.ses.bal < 2) return this.notify("Balans azdır!");
+            this.ses.bal -= 2;
+            elan.vip = true;
+            this.notify("Elan VİP edildi!");
+        }
+        this.syncUser();
+        this.save();
+        this.renderElans();
+        this.updateAuthUI();
+    },
+
+    /* --- ADMIN PANEL --- */
+    adminGate() {
+        const pass = prompt("Admin Şifrəsi:");
+        if(pass === this.conf.adminPass) {
+            document.getElementById('adminPanel').classList.remove('hidden');
+            this.renderAdminTable();
+        } else {
+            this.notify("Giriş rədd edildi!");
+        }
+    },
+
+    closeAdmin() {
+        document.getElementById('adminPanel').classList.add('hidden');
+    },
+
+    renderAdminTable() {
+        const tbody = document.getElementById('adminTableBody');
+        tbody.innerHTML = this.elans.map(e => `
+            <tr>
+                <td><img src="${e.img}" width="50" height="40" style="object-fit:cover; border-radius:5px"></td>
+                <td>${e.title}</td>
+                <td>${e.ownerName} (${e.owner})</td>
+                <td>${e.price} AZN</td>
+                <td>${e.vip ? '<b style="color:gold">VIP</b>' : 'Normal'}</td>
+                <td>
+                    <button onclick="ax.adminAction('del', ${e.id})" style="color:red; border:none; background:none; cursor:pointer"><i class="fas fa-trash"></i></button>
+                    <button onclick="ax.adminAction('vip', ${e.id})" style="color:gold; border:none; background:none; cursor:pointer; margin-left:10px"><i class="fas fa-crown"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    },
+
+    adminAction(type, id) {
+        if(type === 'del') {
+            this.elans = this.elans.filter(e => e.id !== id);
+        } else if(type === 'vip') {
+            const elan = this.elans.find(e => e.id === id);
+            elan.vip = !elan.vip;
+        }
+        this.save();
+        this.renderAdminTable();
+        this.renderElans();
+    },
+
+    adminAddBal() {
+        const phone = document.getElementById('adTargetPhone').value;
+        const amt = parseFloat(document.getElementById('adAmount').value);
+        const user = this.users.find(u => u.phone === phone);
+        if(user) {
+            user.bal += amt;
+            if(this.ses && this.ses.phone === phone) this.ses.bal = user.bal;
+            this.save();
+            this.notify(`${phone} nömrəli balansa ${amt} AZN yükləndi.`);
+            this.updateAuthUI();
+        } else {
+            this.notify("İstifadəçi tapılmadı!");
+        }
+    },
+
+    adminUpdateCard() {
+        this.conf.card = document.getElementById('adCard').value;
+        localStorage.setItem('ax_conf', JSON.stringify(this.conf));
+        this.notify("Sistem kartı yeniləndi!");
+    },
+
+    /* --- HELPERS --- */
+    notify(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    },
+
+    save() {
+        localStorage.setItem('ax_users', JSON.stringify(this.users));
+        localStorage.setItem('ax_elans', JSON.stringify(this.elans));
+    },
+
+    syncUser() {
+        const uIdx = this.users.findIndex(u => u.phone === this.ses.phone);
+        this.users[uIdx] = this.ses;
+        localStorage.setItem('ax_ses', JSON.stringify(this.ses));
+    }
+};
+
+// Başlat
+ax.init();
+</script>
+</body>
+</html>
