@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axeron Elan | Elan Yerləşdir 5 AZN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+
+        :root {
+            --primary: #ff4757;
+            --dark: #2f3542;
+            --light: #f1f2f6;
+            --white: #ffffff;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Ubuntu', sans-serif; }
+        body { background: var(--light); color: var(--dark); padding-top: 60px; }
+
+        /* HEADER & NAVIGATION */
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; height: 60px; 
+            background: var(--dark); color: white; display: flex; 
+            align-items: center; padding: 0 20px; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .menu-icon { font-size: 24px; cursor: pointer; margin-right: 20px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: 1px; flex: 1; }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--white); z-index: 2000; transition: 0.4s;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1); padding: 20px;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .side-item { padding: 15px 0; border-bottom: 1px solid #f9f9f9; display: flex; align-items: center; gap: 15px; color: var(--dark); text-decoration: none; cursor: pointer; }
+        .side-item i { color: var(--primary); width: 25px; }
+
+        /* OVERLAY */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1500; display: none; }
+        .overlay.active { display: block; }
+
+        /* MAIN CONTENT */
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; }
+        .hero-banner { background: var(--primary); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; }
+        .hero-banner h2 { font-size: 18px; }
+        .add-btn-fixed { 
+            position: fixed; bottom: 20px; right: 20px; background: #22c55e; 
+            color: white; padding: 15px 25px; border-radius: 50px; 
+            text-decoration: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 900; display: flex; align-items: center; gap: 10px;
+        }
+
+        /* ADS GRID */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ad-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
+        .ad-card img { width: 100%; height: 140px; object-fit: cover; background: #eee; }
+        .ad-body { padding: 10px; }
+        .ad-price { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .ad-title { font-size: 13px; font-weight: 500; margin: 5px 0; height: 32px; overflow: hidden; }
+        .ad-loc { font-size: 11px; color: #888; display: flex; align-items: center; gap: 4px; }
+
+        /* MODALS / PAGES */
+        .full-page { position: fixed; inset: 0; background: var(--light); z-index: 3000; display: none; flex-direction: column; overflow-y: auto; }
+        .p-header { background: var(--dark); color: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; }
+        .p-body { padding: 20px; }
+
+        /* FORM */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+        .image-preview { width: 100%; height: 200px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; }
+        .image-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* FAQ */
+        .faq-box { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .faq-box b { color: var(--primary); display: block; margin-bottom: 5px; }
+
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+
+        @media (max-width: 480px) { .grid { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="menu-icon" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+        <div class="logo">AXERON ELAN</div>
+        <i class="fas fa-user-shield" onclick="openAdmin()" style="cursor:pointer; opacity: 0.7;"></i>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menyu</h3>
+            <i class="fas fa-times" onclick="toggleSidebar()"></i>
+        </div>
+        <div class="side-item" onclick="location.reload()"><i class="fas fa-home"></i> Ana Səhifə</div>
+        <div class="side-item" onclick="openPage('faq')"><i class="fas fa-question-circle"></i> Tez-tez verilən suallar</div>
+        <div class="side-item" onclick="openPage('support')"><i class="fas fa-headset"></i> Canlı Dəstək</div>
+        <div class="side-item" onclick="openPage('about')"><i class="fas fa-info-circle"></i> Sayt Haqqında</div>
+        <div class="side-item" onclick="openAdmin()"><i class="fas fa-lock"></i> Admin Panel</div>
+        <div style="margin-top: 50px; text-align: center; color: #ccc; font-size: 12px;">v1.5 Prime Edition</div>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <main class="container">
+        <div class="hero-banner">
+            <h2>Hər elan cəmi 5 AZN!</h2>
+            <p style="font-size: 12px; opacity: 0.9;">Ödəniş edin, elanınız dərhal saytda olsun.</p>
+        </div>
+
+        <div class="grid" id="adsGrid">
+            </div>
+    </main>
+
+    <a href="https://t.me/AxeronAndMee" class="add-btn-fixed" target="_blank">
+        <i class="fab fa-telegram-plane"></i> ELAN VER +
+    </a>
+
+    <div id="page-faq" class="full-page">
+        <div class="p-header"><i class="fas fa-arrow-left" onclick="closePage('faq')"></i> <h2>Suallar</h2></div>
+        <div class="p-body">
+            <div class="faq-box"><b>Necə elan verə bilərəm?</b>Telegram düyməsinə basıb Adminə şəkli və məlumatları göndərin.</div>
+            <div class="faq-box"><b>Ödəniş necə edilir?</b>M10 və ya MilliÖn vasitəsilə 5 AZN ödəniş edilir.</div>
+            <div class="faq-box"><b>Elan nə qədər qalır?</b>Bütün elanlar satılana qədər və ya 30 gün aktiv qalır.</div>
+        </div>
+    </div>
+
+    <div id="page-support" class="full-page">
+        <div class="p-header"><i class="fas fa-arrow-left" onclick="closePage('support')"></i> <h2>Dəstək</h2></div>
+        <div class="p-body" style="text-align:center; padding-top:100px;">
+            <i class="fas fa-comments" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h3>Canlı Dəstək</h3>
+            <p style="margin: 20px 0;">Hər hansı bir sualınız və ya probleminiz varsa bizə yazın.</p>
+            <a href="https://t.me/AxeronAndMee" class="btn" style="text-decoration:none; display:block;">TELEGRAM İLƏ YAZ</a>
+        </div>
+    </div>
+
+    <div id="page-about" class="full-page">
+        <div class="p-header"><i class="fas fa-arrow-left" onclick="closePage('about')"></i> <h2>Haqqımızda</h2></div>
+        <div class="p-body">
+            <h3>Axeron Elan Platforması</h3>
+            <p style="margin-top: 15px; line-height: 1.6;">Bu platforma Azərbaycanda ən ucuz və effektiv elan yerləşdirmə sistemidir. Hər kəs üçün əlçatan qiymət (5 AZN) ilə məhsulunuzu minlərlə insana göstəririk.</p>
+        </div>
+    </div>
+
+    <div id="page-admin" class="full-page">
+        <div class="p-header"><i class="fas fa-arrow-left" onclick="closePage('admin')"></i> <h2>Admin Panel</h2></div>
+        <div class="p-body" id="adminAuth">
+            <h3>Giriş Lazımdır</h3>
+            <input type="password" id="admPass" placeholder="Admin şifrəsini daxil edin" style="margin-top:20px;">
+            <button class="btn" onclick="checkAdmin()" style="margin-top:10px;">DAXİL OL</button>
+        </div>
+        <div class="p-body" id="adminContent" style="display:none;">
+            <h3>Yeni Elan Yerləşdir</h3>
+            <div class="image-preview" onclick="document.getElementById('fileInput').click()">
+                <img id="imgView" src="" style="display:none;">
+                <span id="imgText">Şəkil Seçmək Üçün Toxun</span>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
+            
+            <input type="text" id="aTitle" placeholder="Məhsulun adı">
+            <input type="number" id="aPrice" placeholder="Qiymət (AZN)">
+            <input type="text" id="aName" placeholder="İstifadəçi Adı Soyadı">
+            <input type="tel" id="aPhone" placeholder="Telefon Nömrəsi (məs: 050-XXX-XX-XX)">
+            
+            <select id="aRegion">
+                <option value="">Bölgəni Seçin</option>
+                <option>Bakı</option><option>Gəncə</option><option>Sumqayıt</option>
+                <option>Mingəçevir</option><option>Naxçıvan</option><option>Abşeron</option>
+                <option>Lənkəran</option><option>Quba</option><option>Şəki</option>
+                <option>Bərdə</option><option>Göyçay</option><option>Xaçmaz</option>
+                <option>Ağdam</option><option>Ağdaş</option><option>Füzuli</option>
+                <option>İmişli</option><option>Zaqatala</option><option>Sabirabad</option>
+            </select>
+            
+            <textarea id="aDesc" placeholder="Elan haqqında ətraflı məlumat" rows="4"></textarea>
+            <button class="btn" onclick="saveAd()">ELANI SİSTEMƏ ƏLAVƏ ET</button>
+
+            <h3 style="margin-top:40px;">Mövcud Elanlar</h3>
+            <div id="adminList" style="margin-top:15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let ads = JSON.parse(localStorage.getItem('ax_master_ads')) || [];
+        let currentImage = "";
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function openPage(id) {
+            document.getElementById('page-' + id).style.display = 'flex';
+            toggleSidebar();
+        }
+
+        function closePage(id) { document.getElementById('page-' + id).style.display = 'none'; }
+
+        function openAdmin() { openPage('admin'); }
+
+        function checkAdmin() {
+            const p = document.getElementById('admPass').value;
+            if(p === "Rahim058") {
+                document.getElementById('adminAuth').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                renderAdminList();
+            } else { alert("Şifrə yanlışdır!"); }
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imgView').src = e.target.result;
+                    document.getElementById('imgView').style.display = 'block';
+                    document.getElementById('imgText').style.display = 'none';
+                    currentImage = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveAd() {
+            const title = document.getElementById('aTitle').value;
+            const price = document.getElementById('aPrice').value;
+            const name = document.getElementById('aName').value;
+            const phone = document.getElementById('aPhone').value;
+            const region = document.getElementById('aRegion').value;
+            const desc = document.getElementById('aDesc').value;
+
+            if(!title || !price || !currentImage) return alert("Məlumatları tam doldurun!");
+
+            const newAd = {
+                id: Date.now(),
+                title, price, name, phone, region, desc,
+                img: currentImage
+            };
+
+            ads.unshift(newAd);
+            localStorage.setItem('ax_master_ads', JSON.stringify(ads));
+            
+            // Təmizləmə
+            document.querySelectorAll('#adminContent input, #adminContent textarea, #adminContent select').forEach(i => i.value = "");
+            document.getElementById('imgView').style.display = 'none';
+            document.getElementById('imgText').style.display = 'block';
+            currentImage = "";
+            
+            renderAds();
+            renderAdminList();
+            alert("Elan yerləşdirildi!");
+        }
+
+        function renderAds() {
+            const grid = document.getElementById('adsGrid');
+            grid.innerHTML = ads.map(ad => `
+                <div class="ad-card" onclick="showAdDetail(${ad.id})">
+                    <img src="${ad.img}">
+                    <div class="ad-body">
+                        <div class="ad-price">${ad.price} AZN</div>
+                        <div class="ad-title">${ad.title}</div>
+                        <div class="ad-loc"><i class="fas fa-map-marker-alt"></i> ${ad.region}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('adminList');
+            list.innerHTML = ads.map(ad => `
+                <div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span>${ad.title} - ${ad.price} AZN</span>
+                    <button onclick="deleteAd(${ad.id})" style="color:red; background:none; border:none;"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function deleteAd(id) {
+            if(confirm("Bu elanı silmək istəyirsiniz?")) {
+                ads = ads.filter(a => a.id !== id);
+                localStorage.setItem('ax_master_ads', JSON.stringify(ads));
+                renderAds();
+                renderAdminList();
+            }
+        }
+
+        function showAdDetail(id) {
+            const ad = ads.find(a => a.id === id);
+            alert(`
+                📌 ${ad.title}
+                💰 Qiymət: ${ad.price} AZN
+                👤 Satıcı: ${ad.name}
+                📞 Tel: ${ad.phone}
+                📍 Bölgə: ${ad.region}
+                📝 Məlumat: ${ad.desc}
+            `);
+        }
+
+        // Başlanğıc
+        renderAds();
+    </script>
+</body>
+</html>
