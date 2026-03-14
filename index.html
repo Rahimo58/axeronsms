@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXERON GAMES | Rəqəmsal Mağaza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --neon: #00ff88;
+            --bg: #0b0e14;
+            --card: #151921;
+            --text: #ffffff;
+            --p: #7000ff;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
+        .hidden { display: none !important; }
+
+        /* NAVBAR */
+        header { background: rgba(21, 25, 33, 0.95); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); position: sticky; top:0; z-index:100; backdrop-filter: blur(10px); }
+        .logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; color: var(--neon); text-transform: uppercase; }
+        .balance-tag { background: var(--p); padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+
+        /* HERO SECTION */
+        .hero { padding: 30px 20px; background: linear-gradient(45deg, #0b0e14, #1a0b2e); text-align: center; border-bottom: 1px solid #222; }
+        .hero h1 { font-size: 24px; margin-bottom: 10px; color: var(--neon); }
+        .hero p { font-size: 14px; opacity: 0.7; }
+
+        /* CATEGORY SLIDER */
+        .cats { display: flex; overflow-x: auto; padding: 20px; gap: 10px; scrollbar-width: none; }
+        .cat-btn { background: var(--card); border: 1px solid #333; padding: 10px 20px; border-radius: 12px; white-space: nowrap; cursor: pointer; transition: 0.3s; }
+        .cat-btn:hover, .cat-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 255, 136, 0.1); }
+
+        /* PRODUCT GRID */
+        .container { padding: 0 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .product-card { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #222; position: relative; transition: 0.3s; }
+        .product-card:active { transform: scale(0.95); }
+        .product-card img { width: 100%; height: 120px; object-fit: cover; }
+        .p-info { padding: 12px; }
+        .p-title { font-size: 13px; font-weight: bold; margin-bottom: 8px; height: 35px; overflow: hidden; }
+        .p-price { font-size: 16px; color: var(--neon); font-weight: 900; }
+        .stock-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); font-size: 10px; padding: 3px 7px; border-radius: 5px; }
+
+        /* BOTTOM NAV */
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; }
+        .nav-item { text-align: center; color: #777; font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: var(--neon); }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+
+        /* ADMIN & FORMS */
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); z-index:1000; padding: 25px; overflow-y: auto; }
+        input, select { width: 100%; padding: 14px; background: #1a1f29; border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 15px; }
+        .btn-main { width: 100%; padding: 15px; background: var(--p); border: none; border-radius: 10px; color: #fff; font-weight: bold; font-size: 16px; }
+        
+        /* ORDERS LIST */
+        .order-item { background: #1a1f29; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--neon); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Axeron<span style="color:#fff">Games</span></div>
+    <div class="balance-tag" id="balDisplay">0.00 AZN</div>
+</header>
+
+<div class="hero">
+    <h1>Lisenziya və Oyun Kodları</h1>
+    <p>Saniyələr içində çatdırılma, ən ucuz qiymətlər</p>
+</div>
+
+<div class="cats">
+    <div class="cat-btn active" onclick="game.filter('All')">Bax hamısına</div>
+    <div class="cat-btn" onclick="game.filter('Games')">Oyunlar</div>
+    <div class="cat-btn" onclick="game.filter('Software')">Proqramlar</div>
+    <div class="cat-btn" onclick="game.filter('Subscriptions')">Abunəliklər</div>
+</div>
+
+<div class="container">
+    <div id="productGrid" class="grid">
+        </div>
+</div>
+
+<nav>
+    <div class="nav-item active" onclick="game.view('home')"><i class="fas fa-gamepad"></i>MAĞAZA</div>
+    <div class="nav-item" onclick="game.view('orders')"><i class="fas fa-shopping-bag"></i>SİFARİŞLƏR</div>
+    <div class="nav-item" onclick="game.view('profile')"><i class="fas fa-wallet"></i>BALANS</div>
+    <div class="nav-item" onclick="game.openAdmin()"><i class="fas fa-user-shield"></i>ADMİN</div>
+</nav>
+
+<div id="view-orders" class="modal hidden">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <h2>Sifarişlərim</h2>
+        <button onclick="game.view('home')" style="background:none; border:none; color:var(--neon); font-size:20px;">×</button>
+    </div>
+    <div id="orderList"></div>
+</div>
+
+<div id="view-profile" class="modal hidden">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <h2>Balans Yüklə</h2>
+        <button onclick="game.view('home')" style="background:none; border:none; color:var(--neon); font-size:20px;">×</button>
+    </div>
+    <div style="background:var(--card); padding:20px; border-radius:15px; text-align:center;">
+        <p style="opacity:0.6">Sizin ID: <b id="uID">12345</b></p>
+        <h1 style="margin:15px 0;" id="uBal">0.00 AZN</h1>
+        <hr style="opacity:0.1; margin:20px 0;">
+        <p style="font-size:13px; margin-bottom:15px;">Ödənişi (M10, MilliÖn) edib qəbzi adminə göndərin.</p>
+        <button class="btn-main" onclick="window.open('https://wa.me/994000000000')">ADMİNƏ YAZ (WHATSAPP)</button>
+    </div>
+</div>
+
+<div id="view-admin" class="modal hidden">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <h2 style="color:var(--neon)">Admin Panel</h2>
+        <button onclick="game.view('home')" style="background:none; border:none; color:#fff; font-size:20px;">×</button>
+    </div>
+    <div style="background:var(--card); padding:15px; border-radius:15px;">
+        <h4>Balans Artır</h4>
+        <input type="text" id="adTarget" placeholder="İstifadəçi ID-si">
+        <input type="number" id="adAmt" placeholder="Məbləğ">
+        <button class="btn-main" onclick="game.adminAddBal()">BALANSI YÜKLƏ</button>
+    </div>
+    <div style="margin-top:20px;">
+        <h4>Bütün Sifarişlər</h4>
+        <div id="adminOrderList"></div>
+    </div>
+</div>
+
+<script>
+const game = {
+    // Verilənlər bazası (simulyasiya)
+    products: [
+        {id:1, t:"Netflix 1 Aylıq (Premium)", p:4.50, cat:"Subscriptions", img:"https://assets.nflxext.com/ffe/siteui/vlv3/5e161069-ad30-4358-93da-f2f1ee867935/netflix-logo.png"},
+        {id:2, t:"Spotify 3 Aylıq (Ailə)", p:3.00, cat:"Subscriptions", img:"https://www.scdn.co/scannables/v2/icons/spotify-logo.png"},
+        {id:3, t:"Valorant 1200 VP", p:15.20, cat:"Games", img:"https://cmsassets.rgpub.io/assets/v3/assets/bltb730eada65219d44/blt904943f11902d294/65566f7f6f5926315250422c/VALORANT_Logo_V_Red.png"},
+        {id:4, t:"Windows 11 Pro Key", p:7.00, cat:"Software", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Windows_logo_-_2021.svg/1024px-Windows_logo_-_2021.svg.png"},
+        {id:5, t:"Minecraft Java & Bedrock", p:22.00, cat:"Games", img:"https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/apple-icon-114x114.png"},
+        {id:6, t:"PUBG Mobile 660 UC", p:12.50, cat:"Games", img:"https://m.media-amazon.com/images/I/41-lG5kE25L.png"}
+    ],
+    user: JSON.parse(localStorage.getItem('game_user')) || { id: Math.floor(10000 + Math.random()*90000), bal: 0, orders: [] },
+
+    init() {
+        this.renderProducts();
+        this.updateUI();
+    },
+
+    updateUI() {
+        document.getElementById('balDisplay').innerText = this.user.bal.toFixed(2) + " AZN";
+        document.getElementById('uBal').innerText = this.user.bal.toFixed(2) + " AZN";
+        document.getElementById('uID').innerText = this.user.id;
+        localStorage.setItem('game_user', JSON.stringify(this.user));
+    },
+
+    renderProducts(filtered = this.products) {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = filtered.map(p => `
+            <div class="product-card" onclick="game.buy(${p.id})">
+                <div class="stock-badge">STOKDA VAR</div>
+                <img src="${p.img}">
+                <div class="p-info">
+                    <div class="p-title">${p.t}</div>
+                    <div class="p-price">${p.p.toFixed(2)} AZN</div>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    filter(cat) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        if(cat === 'All') return this.renderProducts();
+        const res = this.products.filter(p => p.cat === cat);
+        this.renderProducts(res);
+    },
+
+    view(v) {
+        document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        if(v !== 'home') document.getElementById('view-' + v).classList.remove('hidden');
+        if(v === 'orders') this.renderOrders();
+    },
+
+    buy(id) {
+        const p = this.products.find(x => x.id === id);
+        if(this.user.bal < p.p) return alert("Balansınız kifayət deyil! Zəhmət olmasa artırın.");
+
+        if(confirm(`${p.t} almaq istəyirsiniz?`)) {
+            this.user.bal -= p.p;
+            const newOrder = {
+                oid: "#" + Math.floor(Math.random()*99999),
+                title: p.t,
+                price: p.p,
+                status: "Hazırlanır",
+                date: new Date().toLocaleDateString()
+            };
+            this.user.orders.unshift(newOrder);
+            this.updateUI();
+            alert("Sifariş alındı! 'Sifarişlər' bölməsindən izləyin.");
+        }
+    },
+
+    renderOrders() {
+        const list = document.getElementById('orderList');
+        list.innerHTML = this.user.orders.map(o => `
+            <div class="order-item">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span style="font-weight:bold;">${o.title}</span>
+                    <span style="color:var(--neon);">${o.status}</span>
+                </div>
+                <div style="font-size:12px; opacity:0.6;">Sifariş No: ${o.oid} | Tarix: ${o.date}</div>
+            </div>
+        `).join('') || "<p style='text-align:center; margin-top:50px; opacity:0.5;'>Hələ sifarişiniz yoxdur.</p>";
+    },
+
+    openAdmin() {
+        const pass = prompt("Admin Şifrə:");
+        if(pass === "Rahim058") {
+            this.view('admin');
+            this.renderAdminOrders();
+        }
+    },
+
+    adminAddBal() {
+        const id = document.getElementById('adTarget').value;
+        const amt = parseFloat(document.getElementById('adAmt').value);
+        if(id == this.user.id) {
+            this.user.bal += amt;
+            this.updateUI();
+            alert("Balans artırıldı!");
+        } else {
+            alert("İstifadəçi tapılmadı (Sınaq üçün öz ID-ni yaz)");
+        }
+    },
+
+    renderAdminOrders() {
+        const list = document.getElementById('adminOrderList');
+        list.innerHTML = this.user.orders.map((o, i) => `
+            <div class="order-item" style="border-color:orange">
+                <div>ID: ${this.user.id} - ${o.title}</div>
+                <button onclick="game.changeStatus(${i})" style="margin-top:10px; padding:5px 10px;">Statusu Dəyiş (Hazır/Ləğv)</button>
+            </div>
+        `).join('');
+    },
+
+    changeStatus(idx) {
+        this.user.orders[idx].status = "GÖNDƏRİLDİ ✅";
+        this.updateUI();
+        this.renderAdminOrders();
+    }
+};
+
+game.init();
+</script>
+</body>
+</html>
