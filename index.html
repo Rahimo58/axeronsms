@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axeron Ultimate | Premium Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+
+        :root {
+            --neon: #00f2ff;
+            --purple: #7000ff;
+            --dark-bg: #050608;
+            --card-bg: #0d1117;
+            --text: #ffffff;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Rajdhani', sans-serif; }
+        body { background: var(--dark-bg); color: var(--text); padding-top: 70px; overflow-x: hidden; }
+
+        /* HEADER */
+        header { 
+            position: fixed; top: 0; width: 100%; height: 70px; 
+            background: rgba(13, 17, 23, 0.9); backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 1000; border-bottom: 1px solid var(--neon);
+        }
+        .logo { font-family: 'Orbitron', sans-serif; color: var(--neon); letter-spacing: 3px; font-size: 20px; }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
+            background: var(--card-bg); z-index: 2000; transition: 0.4s;
+            border-right: 2px solid var(--neon); padding: 30px 20px;
+        }
+        .sidebar.active { left: 0; }
+        .side-link { 
+            display: flex; align-items: center; gap: 15px; padding: 15px; 
+            color: #888; text-decoration: none; border-radius: 10px; margin-bottom: 10px;
+            transition: 0.3s; cursor: pointer;
+        }
+        .side-link:hover, .side-link.active { background: rgba(0, 242, 255, 0.1); color: var(--neon); }
+
+        /* GRID */
+        .container { padding: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { 
+            background: var(--card-bg); border-radius: 15px; overflow: hidden; 
+            border: 1px solid #1f222a; position: relative;
+        }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .card-info { padding: 12px; }
+        .price { color: var(--neon); font-size: 18px; font-weight: 700; }
+
+        /* CANLI DƏSTƏK (WIDGET) */
+        .chat-widget {
+            position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px;
+            background: var(--card-bg); border: 1px solid var(--neon); 
+            border-radius: 20px; display: none; flex-direction: column; z-index: 3000;
+        }
+        .chat-header { background: var(--neon); color: #000; padding: 15px; border-radius: 18px 18px 0 0; font-weight: bold; }
+        .chat-body { flex: 1; padding: 15px; font-size: 14px; overflow-y: auto; }
+        .chat-input { padding: 10px; display: flex; gap: 5px; border-top: 1px solid #333; }
+        .chat-input input { flex: 1; background: #1a1f26; border: none; padding: 8px; color: white; border-radius: 5px; }
+
+        .chat-btn {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            background: var(--neon); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 25px;
+            color: #000; cursor: pointer; box-shadow: 0 0 20px var(--neon); z-index: 3000;
+        }
+
+        /* ADMIN MODAL */
+        .admin-page { position: fixed; inset: 0; background: var(--dark-bg); z-index: 4000; display: none; padding: 20px; overflow-y: auto; }
+        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 15px; border: 1px solid var(--purple); margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-item { text-align: center; border-right: 1px solid #333; }
+        
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #1a1f26; border: 1px solid #333; color: white; border-radius: 10px; }
+        .btn-main { background: var(--neon); color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; }
+
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1500; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fas fa-bars-staggered" onclick="toggleMenu()" style="font-size: 22px; color: var(--neon);"></i>
+        <div class="logo">AXERON V3</div>
+        <i class="fas fa-cog" onclick="openAdmin()" style="font-size: 20px; opacity: 0.5;"></i>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <h2 style="color: var(--neon); margin-bottom: 30px;">AXERON PANEL</h2>
+        <div class="side-link active" onclick="location.reload()"><i class="fas fa-home"></i> Ana Səhifə</div>
+        <div class="side-link"><i class="fas fa-mobile-screen"></i> Telefonlar</div>
+        <div class="side-link"><i class="fas fa-gamepad"></i> Oyun Hesabları</div>
+        <div class="side-link" onclick="alert('Tezliklə...')"><i class="fas fa-bolt"></i> VİP Elanlar</div>
+        <div class="side-link" onclick="toggleChat()"><i class="fas fa-headset"></i> Canlı Dəstək</div>
+        <div class="side-link" onclick="openAdmin()"><i class="fas fa-user-shield"></i> Admin Panel</div>
+        <div class="side-link" style="margin-top: 50px; color: #ff4757;" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Çıxış</div>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="container">
+        <div style="background: linear-gradient(to right, var(--purple), var(--neon)); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+            <h3 style="color: white;">Xoş Gəldin, Rahim!</h3>
+            <p style="font-size: 13px; opacity: 0.9;">Gəlirli Elan Platforması Artıq Aktivdir.</p>
+        </div>
+
+        <div class="grid" id="mainGrid">
+            </div>
+    </div>
+
+    <div class="chat-widget" id="chatBox">
+        <div class="chat-header">AXERON DESTEK</div>
+        <div class="chat-body" id="chatMsgs">
+            <div style="background: #1a1f26; padding: 8px; border-radius: 8px; margin-bottom: 10px;">
+                Salam! Sizə necə kömək edə bilərəm?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="msgInput" placeholder="Yazın...">
+            <button onclick="sendMsg()" style="background:var(--neon); border:none; padding:5px 10px; border-radius:5px;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <div class="chat-btn" onclick="toggleChat()"><i class="fas fa-comment-dots"></i></div>
+
+    <div class="admin-page" id="adminPage">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h2>ADMIN DASHBOARD</h2>
+            <i class="fas fa-times" onclick="closeAdmin()" style="font-size: 24px;"></i>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-item"><h1 id="statCount">0</h1><p>Elanlar</p></div>
+            <div class="stat-item"><h1 id="statUsers">1</h1><p>Admin</p></div>
+        </div>
+
+        <div style="background: var(--card-bg); padding: 15px; border-radius: 15px;">
+            <h3>Yeni Elan Əlavə Et</h3><br>
+            <input type="file" id="fInput" onchange="handleFile(this)">
+            <input type="text" id="fTitle" placeholder="Məhsul adı">
+            <input type="number" id="fPrice" placeholder="Qiymət">
+            <input type="text" id="fPhone" placeholder="Telefon (WhatsApp)">
+            <select id="fRegion">
+                <option>Bakı</option><option>Sumqayıt</option><option>Gəncə</option>
+            </select>
+            <textarea id="fDesc" placeholder="Ətraflı məlumat..."></textarea>
+            <button class="btn-main" onclick="addAd()">SAYTA ƏLAVƏ ET</button>
+        </div>
+
+        <h3 style="margin-top: 30px;">ELANLARI SİL</h3>
+        <div id="adminAdList" style="margin-top:15px;"></div>
+    </div>
+
+    <script>
+        let ads = JSON.parse(localStorage.getItem('ax_v3_ads')) || [
+            {id: 1, title: "iPhone 15 Pro", price: 2100, phone: "050-123-45-67", img: "https://images.unsplash.com/photo-1696446701796-da61225697cc?w=400", region: "Bakı"},
+            {id: 2, title: "PUBG Full Account", price: 300, phone: "055-999-00-11", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400", region: "Gəncə"}
+        ];
+
+        let imgData = "";
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none';
+        }
+
+        function toggleChat() {
+            let box = document.getElementById('chatBox');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendMsg() {
+            let inp = document.getElementById('msgInput');
+            if(inp.value) {
+                document.getElementById('chatMsgs').innerHTML += `<div style="text-align:right; margin-bottom:10px;"><span style="background:var(--purple); padding:8px; border-radius:8px;">${inp.value}</span></div>`;
+                inp.value = "";
+                setTimeout(() => {
+                    document.getElementById('chatMsgs').innerHTML += `<div style="margin-bottom:10px;"><span style="background:#1a1f26; padding:8px; border-radius:8px;">Admin tezliklə cavab verəcək. @AxeronAndMee ilə əlaqə saxlayın.</span></div>`;
+                }, 1000);
+            }
+        }
+
+        function openAdmin() {
+            let pass = prompt("Admin Şifrəsi:");
+            if(pass === "Rahim058") {
+                document.getElementById('adminPage').style.display = 'block';
+                renderAdmin();
+            } else { alert("Şifrə yanlışdır!"); }
+        }
+
+        function closeAdmin() { document.getElementById('adminPage').style.display = 'none'; }
+
+        function handleFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => imgData = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addAd() {
+            const title = document.getElementById('fTitle').value;
+            const price = document.getElementById('fPrice').value;
+            if(!title || !price || !imgData) return alert("Məlumatlar tam deyil!");
+
+            ads.unshift({
+                id: Date.now(),
+                title: title,
+                price: price,
+                phone: document.getElementById('fPhone').value,
+                region: document.getElementById('fRegion').value,
+                desc: document.getElementById('fDesc').value,
+                img: imgData
+            });
+
+            localStorage.setItem('ax_v3_ads', JSON.stringify(ads));
+            renderMain();
+            renderAdmin();
+            alert("Elan yerləşdirildi!");
+        }
+
+        function deleteAd(id) {
+            ads = ads.filter(a => a.id !== id);
+            localStorage.setItem('ax_master_ads', JSON.stringify(ads));
+            renderMain();
+            renderAdmin();
+        }
+
+        function renderMain() {
+            document.getElementById('mainGrid').innerHTML = ads.map(a => `
+                <div class="card" onclick="alert('📌 ${a.title}\\n📞 ${a.phone}\\n📍 ${a.region}')">
+                    <img src="${a.img}">
+                    <div class="card-info">
+                        <div class="price">${a.price} AZN</div>
+                        <div style="font-size:14px; margin:5px 0;">${a.title}</div>
+                        <div style="font-size:11px; color:#666;"><i class="fas fa-map-marker-alt"></i> ${a.region}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdmin() {
+            document.getElementById('statCount').innerText = ads.length;
+            document.getElementById('adminAdList').innerHTML = ads.map(a => `
+                <div style="background:#1a1f26; padding:15px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span>${a.title}</span>
+                    <i class="fas fa-trash" onclick="deleteAd(${a.id})" style="color:#ff4757; cursor:pointer;"></i>
+                </div>
+            `).join('');
+        }
+
+        renderMain();
+    </script>
+</body>
+</html>
