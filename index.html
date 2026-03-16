@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXERON | GLOBAL TREASURE SNIPER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- FUTURISTIC CYBER DESIGN --- */
+        :root {
+            --neon-pink: #ff0050;
+            --neon-blue: #00f2ff;
+            --gold: #facd05;
+            --bg-black: #080808;
+            --terminal-green: #00ff41;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background-color: var(--bg-black);
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            background: #000;
+            padding: 15px 30px;
+            border-bottom: 2px solid var(--neon-pink);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255, 0, 80, 0.3);
+        }
+
+        .logo { font-size: 24px; font-weight: 900; letter-spacing: 5px; color: var(--neon-pink); }
+        .status-box { display: flex; gap: 20px; font-size: 12px; font-weight: bold; }
+        .status-item { display: flex; align-items: center; gap: 8px; }
+        .dot { width: 10px; height: 10px; background: var(--terminal-green); border-radius: 50%; box-shadow: 0 0 10px var(--terminal-green); animation: pulse 1s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* MAIN CONTENT LAYOUT */
+        main {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR - TERMINAL LOGS */
+        .sidebar {
+            background: #000;
+            border-right: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .terminal-header {
+            font-size: 14px;
+            color: var(--neon-blue);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        #terminal-logs {
+            flex-grow: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--terminal-green);
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        .log-entry { margin-bottom: 5px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+        .log-time { color: #555; }
+        .log-hit { color: var(--gold); font-weight: bold; }
+
+        /* CONTENT - CHEST GRID */
+        .content {
+            padding: 25px;
+            overflow-y: auto;
+            background: radial-gradient(circle at center, #111 0%, #080808 100%);
+        }
+
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .grid-title { font-size: 20px; color: var(--gold); border-left: 5px solid var(--gold); padding-left: 15px; }
+
+        .chest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .chest-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .chest-card:hover {
+            border-color: var(--neon-pink);
+            transform: scale(1.03);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .chest-card .top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .user-name { color: var(--neon-blue); font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .region { font-size: 10px; color: #666; text-transform: uppercase; }
+
+        .coin-amount {
+            font-size: 40px;
+            color: var(--gold);
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 0 0 10px rgba(250, 205, 5, 0.3);
+        }
+
+        .coin-amount i { font-size: 24px; vertical-align: middle; }
+
+        .join-btn {
+            background: var(--neon-pink);
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .join-btn:hover {
+            background: transparent;
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .no-chests {
+            text-align: center;
+            padding: 100px;
+            color: #333;
+            grid-column: 1 / -1;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">AXERON SNIPER</div>
+    <div class="status-box">
+        <div class="status-item"><div class="dot"></div> GLOBAL SCANNER ACTIVE</div>
+        <div class="status-item"><i class="fas fa-globe" style="color:var(--neon-blue)"></i> TOTAL REGIONS: 48</div>
+        <div class="status-item"><i class="fas fa-bolt" style="color:var(--gold)"></i> LATENCY: 24ms</div>
+    </div>
+</header>
+
+<main>
+    <aside class="sidebar">
+        <div class="terminal-header">NETWORK LOGS [REAL-TIME]</div>
+        <div id="terminal-logs">
+            </div>
+    </aside>
+
+    <section class="content">
+        <div class="grid-header">
+            <div class="grid-title">AŞKARLANAN GLOBAL SANDIQLAR</div>
+            <div id="live-timer" style="color:#555; font-size: 12px;">Sistem yenilənir...</div>
+        </div>
+
+        <div class="chest-grid" id="mainGrid">
+            <div class="no-chests" id="placeholder">Xəzinə axtarılır... Bütün ölkələr üzrə skaner başladılır.</div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const grid = document.getElementById('mainGrid');
+    const logs = document.getElementById('terminal-logs');
+    const placeholder = document.getElementById('placeholder');
+
+    const countries = ["AZ", "TR", "RU", "USA", "DE", "FR", "UK", "BR"];
+    const fakeUsers = ["Hunter_2026", "Gold_Master", "Baku_Warrior", "Crypto_King", "TikTok_Legend", "Live_Pro", "Sultan_Live", "Trend_Baku"];
+
+    // SYSTEM LOGS FUNCTION
+    function addLog(text, isHit = false) {
+        const entry = document.createElement('div');
+        entry.className = "log-entry";
+        if (isHit) entry.classList.add('log-hit');
+        
+        const time = new Date().toLocaleTimeString();
+        entry.innerHTML = `<span class="log-time">[${time}]</span> ${text}`;
+        
+        logs.appendChild(entry);
+        if (logs.childNodes.length > 50) logs.removeChild(logs.firstChild);
+        document.querySelector('.sidebar').scrollTop = logs.scrollHeight;
+    }
+
+    // CREATE CHEST CARD
+    function spawnChest() {
+        if (placeholder) placeholder.style.display = "none";
+
+        const user = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+        const country = countries[Math.floor(Math.random() * countries.length)];
+        const coins = Math.floor(Math.random() * 950) + 50;
+
+        const card = document.createElement('div');
+        card.className = "chest-card";
+        card.innerHTML = `
+            <div class="top">
+                <div>
+                    <div class="user-name">@${user}</div>
+                    <div class="region"><i class="fas fa-map-marker-alt"></i> REGION: ${country}</div>
+                </div>
+                <i class="fas fa-treasure-chest" style="color:var(--gold)"></i>
+            </div>
+            <div class="coin-amount">
+                <i class="fas fa-coins"></i> ${coins}
+            </div>
+            <div style="font-size:12px; color:#888; margin-bottom:15px;">Açılma: <span style="color:var(--neon-blue)">Hazırda Aktiv!</span></div>
+            <a href="https://www.tiktok.com/@${user}/live" target="_blank" class="join-btn">SANDIĞI GÖTÜR</a>
+        `;
+
+        grid.prepend(card);
+        if (grid.childNodes.length > 12) grid.removeChild(grid.lastChild);
+
+        addLog(`HIT! Global sandıq tapıldı: @${user} (${coins} jeton)`, true);
+    }
+
+    // SCANNER SIMULATION
+    function systemScan() {
+        const country = countries[Math.floor(Math.random() * countries.length)];
+        const id = Math.floor(Math.random() * 999999);
+        addLog(`Skan edilir: Region [${country}] | Stream_ID: ${id}...`);
+        
+        // Şans faktoru: Hər skanda yox, təsadüfi tapılır
+        if (Math.random() > 0.85) {
+            spawnChest();
+        }
+    }
+
+    // Start Processes
+    setInterval(systemScan, 1000);
+    setInterval(() => {
+        document.getElementById('live-timer').innerText = "Son yenilənmə: " + new Date().toLocaleTimeString();
+    }, 1000);
+
+</script>
+
+</body>
+</html>
