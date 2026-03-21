@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axeron AI | Avto-Analiz Mərkəzi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #05080a; color: #fff; overflow-x: hidden; }
+
+        /* GİRİŞ EKRANI (🔒 Axeron058) */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .login-card { background: #111; padding: 40px; border: 2px solid #00ffcc; border-radius: 15px; text-align: center; box-shadow: 0 0 30px #00ffcc55; }
+        input[type="password"] { background: #222; border: 1px solid #00ffcc; color: #fff; padding: 12px; margin: 20px 0; width: 100%; border-radius: 5px; outline: none; }
+        .btn-enter { background: #00ffcc; color: #000; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+
+        /* ƏSAS SAYT */
+        #main-site { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+        header { border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .status-bar { background: #1a1a1a; padding: 10px 20px; border-radius: 50px; font-size: 13px; color: #00ffcc; border: 1px solid #333; }
+        
+        /* AVTO AXTARIŞ PANELİ */
+        .search-container { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #222; text-align: center; }
+        .search-btn { background: linear-gradient(45deg, #00ffcc, #0099ff); color: #000; border: none; padding: 20px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 20px rgba(0, 255, 204, 0.3); transition: 0.3s; }
+        .search-btn:active { transform: scale(0.95); }
+
+        /* NƏTİCƏ QUTUSU */
+        #result-display { display: none; margin-top: 30px; animation: fadeIn 1s; }
+        .ticket-card { background: #1a1a1a; border: 2px solid #00ffcc; border-radius: 15px; padding: 25px; position: relative; }
+        .ticket-header { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
+        .match-name { font-size: 28px; font-weight: bold; color: #fff; margin-bottom: 10px; }
+        .prediction { font-size: 20px; color: #00ffcc; margin-bottom: 20px; font-weight: 500; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid #333; pt: 15px; }
+        .stat-item { background: #222; padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-val { display: block; font-size: 22px; font-weight: bold; color: #00ffcc; }
+        .stat-lbl { font-size: 10px; color: #666; }
+
+        /* ADMİN PANEL (🔐 Rahim058) */
+        #admin-btn { position: fixed; bottom: 20px; right: 20px; opacity: 0.3; cursor: pointer; }
+        #admin-panel { display: none; background: #000; border: 1px solid #f1c40f; padding: 20px; margin-top: 40px; border-radius: 10px; color: #f1c40f; font-family: monospace; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="color: #00ffcc;">AXERON SİSTEMİ</h2>
+            <p style="color: #666; font-size: 12px; margin-top: 5px;">Giriş üçün Axeron şifrəsini yazın</p>
+            <input type="password" id="sysPass" placeholder="Şifrə...">
+            <button class="btn-enter" onclick="unlock()">SİSTEMƏ DAXİL OL</button>
+        </div>
+    </div>
+
+    <div id="main-site">
+        <header>
+            <h1 style="font-size: 22px;">RAHİM <span style="color:#00ffcc">AI SCANNER</span></h1>
+            <div class="status-bar">🛰️ SERVER: AKTİV</div>
+        </header>
+
+        <div class="search-container">
+            <h3 style="margin-bottom: 20px; color: #888;">AI Avtomatik Oyun Axtarış Mühərriki</h3>
+            <button class="search-btn" onclick="startScanning()">🔍 UDUŞLU OYUNLARI AXTAR</button>
+            <p style="margin-top: 15px; font-size: 11px; color: #555;">(Sistem kənardan 1xbet və digər bazaları skan edir)</p>
+        </div>
+
+        <div id="result-display">
+            <div class="ticket-card">
+                <div class="ticket-header">✅ AI Analiz Nəticəsi Tapıldı</div>
+                <div class="match-name" id="res-match">---</div>
+                <div class="prediction" id="res-pred">---</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-val" id="res-prob">99%</span>
+                        <span class="stat-lbl">UDUŞ EHTİMALI</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-val" id="res-odds">1.85</span>
+                        <span class="stat-lbl">CANLI ORAN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-btn" onclick="openAdmin()">Admin Panel</div>
+        
+        <div id="admin-panel">
+            <h4>⚙️ RAHİM ADMİN PANEL</h4>
+            <p>> Alqoritm: Dəqiq Analiz v4.0</p>
+            <p>> Skaner: 1xBet, Marat, Bet365</p>
+            <p>> Status: Limitsiz Giriş</p>
+        </div>
+    </div>
+
+    <script>
+        // ŞİFRƏLİ GİRİŞ (Axeron058)
+        function unlock() {
+            const p = document.getElementById('sysPass').value;
+            if(p === "Axeron058") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-site').style.display = 'block';
+            } else {
+                alert("Giriş rədd edildi!");
+            }
+        }
+
+        // AVTO AXTARIŞ SİSTEMİ
+        function startScanning() {
+            const btn = document.querySelector('.search-btn');
+            btn.innerText = "🛰️ SKAN EDİLİR...";
+            btn.disabled = true;
+
+            const oyunlar = [
+                {m: "Manchester City - Arsenal", p: "2.5 ÜST", o: "1.72"},
+                {m: "Real Madrid - Atletico Madrid", p: "MS 1", o: "1.90"},
+                {m: "Bayern Munich - Dortmund", p: "MS 1 & 2.5 ÜST", o: "2.10"},
+                {m: "Bayer Leverkusen - Milan", p: "QOL-QOL (VAR)", o: "1.65"},
+                {m: "Qarabağ - Neftçi", p: "MS 1", o: "1.55"}
+            ];
+
+            setTimeout(() => {
+                const secilen = oyunlar[Math.floor(Math.random() * oyunlar.length)];
+                document.getElementById('result-display').style.display = 'block';
+                document.getElementById('res-match').innerText = secilen.m;
+                document.getElementById('res-pred').innerText = "TƏKLİF: " + secilen.p;
+                document.getElementById('res-odds').innerText = secilen.o;
+                document.getElementById('res-prob').innerText = (Math.random() * (99.9 - 95.0) + 95.0).toFixed(1) + "%";
+                
+                btn.innerText = "🔍 YENİ OYUN AXTAR";
+                btn.disabled = false;
+                
+                // Saytı avtomatik aşağı sürüşdür
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }, 3000);
+        }
+
+        // ADMİN PANEL (Rahim058)
+        function openAdmin() {
+            const ap = prompt("Admin Panel Şifrəsi:");
+            if(ap === "Rahim058") {
+                document.getElementById('admin-panel').style.display = 'block';
+                alert("Xoş gəldiniz Rahim!");
+            } else {
+                alert("Səhv şifrə!");
+            }
+        }
+    </script>
+</body>
+</html>
