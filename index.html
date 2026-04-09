@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axeron SMS | Virtual Nömrə Satışı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --bg: #05070a;
+            --card-bg: #11161d;
+            --text: #ffffff;
+            --accent: #00ff88;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Naviqasiya */
+        .navbar {
+            background: rgba(17, 22, 29, 0.9);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #2d343f;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 2px;
+            color: var(--primary);
+        }
+
+        /* Hero Bölməsi */
+        .hero {
+            padding: 60px 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, #00d2ff15 0%, transparent 70%);
+        }
+
+        .hero h2 { font-size: 32px; margin-bottom: 10px; }
+        .hero p { color: #8892b0; font-size: 16px; }
+
+        /* Kartlar Konteyneri */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #232931;
+            border-radius: 20px;
+            width: 280px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+        }
+
+        .card img {
+            width: 60px;
+            height: 40px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 { margin: 10px 0; font-size: 20px; }
+        .card .price {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 15px 0;
+        }
+
+        .buy-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 12px 0;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .buy-btn:hover { background: #fff; transform: scale(1.02); }
+
+        /* FAQ Bölməsi */
+        .faq {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .faq-item {
+            background: #161b22;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .faq-item h4 { margin: 0; color: var(--primary); font-size: 15px; }
+        .faq-item p { margin: 10px 0 0; color: #8892b0; font-size: 14px; display: none; }
+
+        /* Sifariş Modalı */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1c222d;
+            padding: 30px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 380px;
+            border: 1px solid var(--primary);
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 1px solid #333;
+            background: #0a0c10;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .confirm-btn {
+            background: var(--accent);
+            color: #000;
+            padding: 14px;
+            width: 100%;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px;
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>AXERON SMS</h1>
+    </div>
+
+    <div class="hero">
+        <h2>Virtual Nömrə Paneli</h2>
+        <p>WhatsApp, Telegram və digər xidmətlər üçün 100% işlək nömrələr.</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <img src="https://flagcdn.com/w160/az.png" alt="AZ">
+            <h3>Azərbaycan</h3>
+            <p style="color: #666;">+994 Prefiks</p>
+            <div class="price">5.00 AZN</div>
+            <button class="buy-btn" onclick="openOrder('Azərbaycan (+994)')">SİFARİŞ ET</button>
+        </div>
+
+        <div class="card">
+            <img src="https://flagcdn.com/w160/tr.png" alt="TR">
+            <h3>Türkiyə</h3>
+            <p style="color: #666;">+90 Prefiks</p>
+            <div class="price">4.00 AZN</div>
+            <button class="buy-btn" onclick="openOrder('Türkiyə (+90)')">SİFARİŞ ET</button>
+        </div>
+
+        <div class="card">
+            <img src="https://flagcdn.com/w160/us.png" alt="US">
+            <h3>ABŞ (USA)</h3>
+            <p style="color: #666;">+1 Prefiks</p>
+            <div class="price">2.50 AZN</div>
+            <button class="buy-btn" onclick="openOrder('ABŞ (+1)')">SİFARİŞ ET</button>
+        </div>
+    </div>
+
+    <div class="faq">
+        <h3 style="text-align: center; margin-bottom: 20px;">Tez-tez Verilən Suallar</h3>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <h4>Kod gəlməsə nə olur?</h4>
+            <p>Əgər 10 dəqiqə ərzində kod daxil olmasa, ödənişiniz tam şəkildə geri qaytarılır.</p>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <h4>Hansı ödənişləri qəbul edirsiniz?</h4>
+            <p>M10, MilliÖN və Kartdan-karta ödənişlər qəbul edilir.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="overlay">
+        <div class="modal">
+            <h3 id="modal-title" style="color: var(--primary);">Sifariş</h3>
+            <p style="font-size: 13px; color: #888;">Nömrəni təslim almaq üçün əlaqə nömrənizi daxil edin.</p>
+            <input type="text" id="cust-contact" placeholder="Məs: 050 123 45 67">
+            <button class="confirm-btn" onclick="sendOrder()">SİFARİŞİ TAMAMLA</button>
+            <button onclick="closeOrder()" style="background:none; border:none; color:#ff4444; margin-top:15px; cursor:pointer;">Ləğv et</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Axeron SMS Azerbaijan. Bütün hüquqlar qorunur.
+    </footer>
+
+    <script>
+        let selectedProduct = "";
+
+        function openOrder(name) {
+            selectedProduct = name;
+            document.getElementById('modal-title').innerText = name;
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeOrder() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function toggleFaq(el) {
+            const p = el.querySelector('p');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function sendOrder() {
+            const contact = document.getElementById('cust-contact').value;
+            const token = "8726373680:AAF2werxJGL5txqaVsKagScoE_4d8sQSwW8";
+            const chat_id = "8528240785";
+
+            if(!contact) {
+                alert("Zəhmət olmasa əlaqə nömrənizi yazın!");
+                return;
+            }
+
+            const message = `🚀 YENİ SİFARİŞ!\n\n🌍 Ölkə: ${selectedProduct}\n👤 Müştəri: ${contact}\n🕒 Zaman: ${new Date().toLocaleString()}`;
+
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}`)
+            .then(res => {
+                if(res.ok) {
+                    alert("Sifarişiniz qəbul edildi! Tezliklə sizinlə əlaqə saxlanılacaq.");
+                    closeOrder();
+                } else {
+                    alert("Xəta baş verdi. Botu yoxlayın.");
+                }
+            })
+            .catch(err => alert("İnternet xətası!"));
+        }
+    </script>
+</body>
+</html>
