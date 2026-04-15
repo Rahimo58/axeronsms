@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axeron SMS | Panel</title>
+    <style>
+        body { 
+            background: #020408; 
+            color: #e6edf3; 
+            font-family: -apple-system, system-ui, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+        }
+        .main-card { 
+            background: #0d1117; 
+            padding: 35px; 
+            border-radius: 20px; 
+            border: 1px solid #30363d; 
+            width: 320px; 
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        h2 { color: #58a6ff; margin-bottom: 5px; font-size: 24px; }
+        p { color: #8b949e; font-size: 13px; margin-bottom: 25px; }
+        
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #30363d; 
+            background: #010409; 
+            color: white; 
+            font-size: 16px; 
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: #58a6ff; }
+        
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 8px; 
+            border: none; 
+            background: #238636; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 15px; 
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background: #2ea043; }
+        
+        #res { margin-top: 20px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h2>AXERON SMS</h2>
+    <p>Nömrəni yaz və SMS göndər</p>
+    
+    <input type="text" id="num" placeholder="Məs: 0501234567">
+    <button onclick="send()">SMS GÖNDƏR</button>
+    
+    <div id="res"></div>
+</div>
+
+<script>
+    async function send() {
+        const input = document.getElementById('num').value;
+        const res = document.getElementById('res');
+        
+        let clean = input.replace(/\D/g, '');
+        if (!clean.startsWith('994')) {
+            clean = clean.startsWith('0') ? '994' + clean.substring(1) : '994' + clean;
+        }
+
+        res.innerText = "⏳ Göndərilir...";
+        res.style.color = "#58a6ff";
+
+        try {
+            const response = await fetch("https://api.million.az/api/auth/send-otp", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ msisdn: clean })
+            });
+
+            if (response.ok) {
+                res.innerText = "✅ SMS GÖNDƏRİLDİ!";
+                res.style.color = "#3fb950";
+            } else {
+                res.innerText = "❌ XƏTA: " + response.status;
+                res.style.color = "#f85149";
+            }
+        } catch (e) {
+            res.innerText = "⚠️ BAĞLANTI XƏTASI!";
+            res.style.color = "#d29922";
+        }
+    }
+</script>
+
+</body>
+</html>
